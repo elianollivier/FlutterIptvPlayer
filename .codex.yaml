@@ -1,2 +1,5 @@
+# .codex.yaml
 language_versions:
-  go: "1.24.3"
+  go: "1.24.3"   # évite le download 1.23.8
+  node: "20"     # si tu veux Node 20
+  python: "3.12" # si tu as des scripts Python
