@@ -25,32 +25,48 @@ class ItemCard extends StatefulWidget {
 class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
   bool _hovered = false;
   bool _expanded = false;
+  int _selectedIndex = 0;
 
-  void _handleTap() {
+  void _open() {
     if (widget.item.type == IptvItemType.folder) {
       widget.onOpenFolder?.call();
-    } else {
+    } else if (widget.item.links.isNotEmpty) {
+      final link = widget.item.links[_selectedIndex];
+      widget.onOpenLink?.call(link);
+    }
+  }
+
+  void _toggleExpanded() {
+    if (widget.item.type == IptvItemType.channel) {
       setState(() => _expanded = !_expanded);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final link = widget.item.links.isNotEmpty ? widget.item.links.first.url : '';
-    final preview = link.length > 30 ? '${link.substring(0, 30)}...' : link;
+    final ChannelLink? selected =
+        widget.item.links.isNotEmpty ? widget.item.links[_selectedIndex] : null;
+    final preview = selected == null
+        ? ''
+        : [selected.name, selected.resolution, selected.fps]
+            .where((e) => e.isNotEmpty)
+            .join(' - ');
 
     final previewWidget = _hovered && preview.isNotEmpty
         ? Positioned(
             bottom: 0,
             left: 0,
             right: 0,
-            child: Container(
-              color: Colors.black54,
-              padding: const EdgeInsets.all(4),
-              child: Text(
-                preview,
-                style: const TextStyle(color: Colors.white, fontSize: 12),
-                textAlign: TextAlign.center,
+            child: GestureDetector(
+              onTap: _toggleExpanded,
+              child: Container(
+                color: Colors.black54,
+                padding: const EdgeInsets.all(4),
+                child: Text(
+                  preview,
+                  style: const TextStyle(color: Colors.white, fontSize: 12),
+                  textAlign: TextAlign.center,
+                ),
               ),
             ),
           )
@@ -109,12 +125,15 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
       child: _expanded && widget.item.type == IptvItemType.channel
           ? Column(
               children: [
-                for (final link in widget.item.links)
+                for (int i = 0; i < widget.item.links.length; i++)
                   InkWell(
-                    onTap: () => widget.onOpenLink?.call(link),
+                    onTap: () => setState(() {
+                      _selectedIndex = i;
+                      _expanded = false;
+                    }),
                     child: Row(
                       children: [
-                        Expanded(child: Text(link.name)),
+                        Expanded(child: Text(widget.item.links[i].name)),
                         IconButton(
                           icon: const Icon(Icons.edit, size: 18),
                           onPressed: widget.onEdit,
@@ -137,7 +156,7 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          InkWell(onTap: _handleTap, child: card),
+          InkWell(onTap: _open, child: card),
           linksList,
         ],
       ),

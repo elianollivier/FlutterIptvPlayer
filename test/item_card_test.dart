@@ -38,14 +38,18 @@ void main() {
     await gesture.addPointer();
     await gesture.moveTo(tester.getCenter(find.byType(ItemCard)));
     await tester.pumpAndSettle();
-    expect(find.text('https://example.com/very/long/...'), findsOneWidget);
+    expect(find.text('L1'), findsOneWidget);
   });
 
-  testWidgets('expands on tap', (tester) async {
+  testWidgets('tapping preview expands list', (tester) async {
     await tester.pumpWidget(buildTest());
-    expect(find.text('L1'), findsNothing);
-    await tester.tap(find.byType(ItemCard));
+    final gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
+    await gesture.addPointer();
+    await gesture.moveTo(tester.getCenter(find.byType(ItemCard)));
     await tester.pumpAndSettle();
-    expect(find.text('L1'), findsOneWidget);
+    expect(find.byIcon(Icons.delete), findsNothing);
+    await tester.tap(find.text('L1'));
+    await tester.pumpAndSettle();
+    expect(find.byIcon(Icons.delete), findsOneWidget);
   });
 }
