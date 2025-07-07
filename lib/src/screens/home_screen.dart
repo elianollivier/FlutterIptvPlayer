@@ -87,9 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
     await _load();
   }
 
-  Future<void> _openChannel(IptvItem channel) async {
-    if (channel.links.isEmpty) return;
-    final link = channel.links.first.url;
+  Future<void> _openLink(String link) async {
     const exePath = r'C:\Program Files\VideoLAN\VLC\vlc.exe';
     try {
       await Process.start(exePath, [link], runInShell: true);
@@ -124,14 +122,13 @@ class _HomeScreenState extends State<HomeScreen> {
               final item = _items[index];
               return ItemCard(
                 item: item,
-                onTap: () {
-                  if (item.type == IptvItemType.folder) {
-                    _openFolder(item);
-                  } else {
-                    _openChannel(item);
-                  }
-                },
                 onEdit: () => _editItem(item),
+                onOpenFolder: item.type == IptvItemType.folder
+                    ? () => _openFolder(item)
+                    : null,
+                onOpenLink: item.type == IptvItemType.channel
+                    ? (link) => _openLink(link.url)
+                    : null,
               );
             },
           );
