@@ -34,6 +34,13 @@ class ChannelLink {
       };
 }
 
+extension ChannelLinkFormatting on ChannelLink {
+  String get formattedName {
+    final details = [resolution, fps].where((e) => e.isNotEmpty).join(' ');
+    return details.isEmpty ? name : '$name [$details]';
+  }
+}
+
 class IptvItem {
   final String id;
   final IptvItemType type;

@@ -165,8 +165,14 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                   itemBuilder: (context, index) {
                     final link = _links[index];
                     return ListTile(
-                      title: Text(link.name),
-                      subtitle: Text(link.url),
+                      title: Text(link.formattedName),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(link.url),
+                          if (link.notes.isNotEmpty) Text(link.notes),
+                        ],
+                      ),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
