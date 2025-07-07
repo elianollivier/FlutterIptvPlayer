@@ -100,9 +100,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final title = widget.parentId == null
-        ? 'Dossier Central'
-        : _allItems.firstWhere((e) => e.id == widget.parentId!).name;
+    final String title;
+    if (widget.parentId == null) {
+      title = 'Dossier Central';
+    } else {
+      final parent = _allItems.any((e) => e.id == widget.parentId)
+          ? _allItems.firstWhere((e) => e.id == widget.parentId)
+          : null;
+      title = parent?.name ?? 'Dossier';
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
