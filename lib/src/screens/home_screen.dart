@@ -99,6 +99,15 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<void> _openLink(String url) async {
+    final exePath = await SettingsService().getVlcPath();
+    try {
+      await Process.start(exePath, [url], runInShell: true);
+    } catch (e) {
+      _logger.e('Could not open VLC', error: e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final String title;
