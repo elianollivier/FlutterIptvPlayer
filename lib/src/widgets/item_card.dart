@@ -42,17 +42,18 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
     }
   }
 
+  String _formatLink(ChannelLink link) {
+    final details = [link.resolution, link.fps].where((e) => e.isNotEmpty).join(' ');
+    return details.isEmpty ? link.name : '${link.name} [$details]';
+  }
+
   @override
   Widget build(BuildContext context) {
     final ChannelLink? selected =
         widget.item.links.isNotEmpty ? widget.item.links[_selectedIndex] : null;
-    final preview = selected == null
-        ? ''
-        : [selected.name, selected.resolution, selected.fps]
-            .where((e) => e.isNotEmpty)
-            .join(' - ');
+    final preview = selected == null ? '' : _formatLink(selected);
 
-    final previewWidget = _hovered && preview.isNotEmpty
+    final previewWidget = preview.isNotEmpty
         ? Positioned(
             bottom: 0,
             left: 0,
@@ -81,18 +82,19 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
         borderRadius: BorderRadius.circular(12),
         child: Stack(
           children: [
-            Positioned(
-              top: 4,
-              left: 4,
-              right: 32,
-              child: Text(
-                widget.item.name,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyMedium,
+            if (widget.item.type == IptvItemType.folder)
+              Positioned(
+                top: 4,
+                left: 4,
+                right: 32,
+                child: Text(
+                  widget.item.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
               ),
-            ),
             Center(
               child: widget.item.logoPath != null
                   ? Image.file(
@@ -123,29 +125,42 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
     final linksList = AnimatedSize(
       duration: const Duration(milliseconds: 200),
       child: _expanded && widget.item.type == IptvItemType.channel
-          ? Column(
-              children: [
-                for (int i = 0; i < widget.item.links.length; i++)
-                  InkWell(
-                    onTap: () => setState(() {
-                      _selectedIndex = i;
-                      _expanded = false;
-                    }),
-                    child: Row(
-                      children: [
-                        Expanded(child: Text(widget.item.links[i].name)),
-                        IconButton(
-                          icon: const Icon(Icons.edit, size: 18),
-                          onPressed: widget.onEdit,
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete, size: 18),
-                          onPressed: widget.onEdit,
-                        ),
-                      ],
-                    ),
+          ? Container(
+              margin: const EdgeInsets.only(top: 4),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceVariant,
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 4,
                   ),
-              ],
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  for (int i = 0; i < widget.item.links.length; i++)
+                    InkWell(
+                      onTap: () => setState(() {
+                        _selectedIndex = i;
+                        _expanded = false;
+                      }),
+                      child: Container(
+                        width: double.infinity,
+                        color: i == _selectedIndex
+                            ? Theme.of(context).colorScheme.primaryContainer
+                            : Colors.transparent,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 6),
+                        child: Text(
+                          _formatLink(widget.item.links[i]),
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             )
           : const SizedBox.shrink(),
     );

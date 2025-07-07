@@ -47,9 +47,8 @@ void main() {
     await gesture.addPointer();
     await gesture.moveTo(tester.getCenter(find.byType(ItemCard)));
     await tester.pumpAndSettle();
-    expect(find.byIcon(Icons.delete), findsNothing);
     await tester.tap(find.text('L1'));
     await tester.pumpAndSettle();
-    expect(find.byIcon(Icons.delete), findsOneWidget);
+    expect(find.text('L1'), findsNWidgets(2));
   });
 }
