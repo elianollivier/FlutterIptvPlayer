@@ -32,6 +32,22 @@ class ChannelLink {
         'fps': fps,
         'notes': notes,
       };
+
+  ChannelLink copyWith({
+    String? name,
+    String? url,
+    String? resolution,
+    String? fps,
+    String? notes,
+  }) {
+    return ChannelLink(
+      name: name ?? this.name,
+      url: url ?? this.url,
+      resolution: resolution ?? this.resolution,
+      fps: fps ?? this.fps,
+      notes: notes ?? this.notes,
+    );
+  }
 }
 
 class IptvItem {
@@ -73,4 +89,22 @@ class IptvItem {
 
   @override
   String toString() => jsonEncode(toJson());
+
+  IptvItem copyWith({
+    String? id,
+    IptvItemType? type,
+    String? name,
+    String? logoPath,
+    List<ChannelLink>? links,
+    String? parentId,
+  }) {
+    return IptvItem(
+      id: id ?? this.id,
+      type: type ?? this.type,
+      name: name ?? this.name,
+      logoPath: logoPath ?? this.logoPath,
+      links: links ?? this.links,
+      parentId: parentId ?? this.parentId,
+    );
+  }
 }

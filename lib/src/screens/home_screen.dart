@@ -87,9 +87,10 @@ class _HomeScreenState extends State<HomeScreen> {
     await _load();
   }
 
-  Future<void> _openChannel(IptvItem channel) async {
+  Future<void> _openChannel(IptvItem channel, {int index = 0}) async {
     if (channel.links.isEmpty) return;
-    final link = channel.links.first.url;
+    if (index >= channel.links.length) index = 0;
+    final link = channel.links[index].url;
     const exePath = r'C:\Program Files\VideoLAN\VLC\vlc.exe';
     try {
       await Process.start(exePath, [link], runInShell: true);
@@ -98,11 +99,82 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<void> _editLink(IptvItem channel, {ChannelLink? link, int? index}) async {
+    final nameCtrl = TextEditingController(text: link?.name ?? '');
+    final urlCtrl = TextEditingController(text: link?.url ?? '');
+    final resCtrl = TextEditingController(text: link?.resolution ?? '');
+    final fpsCtrl = TextEditingController(text: link?.fps ?? '');
+    final notesCtrl = TextEditingController(text: link?.notes ?? '');
+
+    final result = await showDialog<ChannelLink>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Link'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(controller: nameCtrl, decoration: const InputDecoration(labelText: 'Name')),
+            TextField(controller: urlCtrl, decoration: const InputDecoration(labelText: 'URL')),
+            TextField(controller: resCtrl, decoration: const InputDecoration(labelText: 'Resolution')),
+            TextField(controller: fpsCtrl, decoration: const InputDecoration(labelText: 'FPS')),
+            TextField(controller: notesCtrl, decoration: const InputDecoration(labelText: 'Notes')),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(
+                context,
+                ChannelLink(
+                  name: nameCtrl.text,
+                  url: urlCtrl.text,
+                  resolution: resCtrl.text,
+                  fps: fpsCtrl.text,
+                  notes: notesCtrl.text,
+                ),
+              );
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+
+    if (result != null) {
+      final chIndex = _allItems.indexWhere((e) => e.id == channel.id);
+      if (chIndex < 0) return;
+      final newLinks = List<ChannelLink>.from(channel.links);
+      if (index == null) {
+        newLinks.add(result);
+      } else {
+        newLinks[index] = result;
+      }
+      setState(() {
+        _allItems[chIndex] = channel.copyWith(links: newLinks);
+      });
+      await _storage.saveItems(_allItems);
+    }
+  }
+
+  Future<void> _deleteLink(IptvItem channel, int index) async {
+    final chIndex = _allItems.indexWhere((e) => e.id == channel.id);
+    if (chIndex < 0) return;
+    final newLinks = List<ChannelLink>.from(channel.links)..removeAt(index);
+    setState(() {
+      _allItems[chIndex] = channel.copyWith(links: newLinks);
+    });
+    await _storage.saveItems(_allItems);
+  }
+
   @override
   Widget build(BuildContext context) {
     final title = widget.parentId == null
         ? 'Dossier Central'
-        : _allItems.firstWhere((e) => e.id == widget.parentId!).name;
+        : (() {
+            final index = _allItems.indexWhere((e) => e.id == widget.parentId);
+            return index >= 0 ? _allItems[index].name : '';
+          })();
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
@@ -132,6 +204,17 @@ class _HomeScreenState extends State<HomeScreen> {
                   }
                 },
                 onEdit: () => _editItem(item),
+                onAddLink:
+                    item.type == IptvItemType.channel ? () => _editLink(item) : null,
+                onEditLink: item.type == IptvItemType.channel
+                    ? (link, index) => _editLink(item, link: link, index: index)
+                    : null,
+                onDeleteLink: item.type == IptvItemType.channel
+                    ? (index) => _deleteLink(item, index)
+                    : null,
+                onSelectLink: item.type == IptvItemType.channel
+                    ? (index) => _openChannel(item, index: index)
+                    : null,
               );
             },
           );
