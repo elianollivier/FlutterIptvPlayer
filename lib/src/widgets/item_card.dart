@@ -168,12 +168,16 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
     return MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          InkWell(onTap: _open, child: card),
-          linksList,
-        ],
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return Column(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Expanded(child: InkWell(onTap: _open, child: card)),
+              linksList,
+            ],
+          );
+        },
       ),
     );
   }
