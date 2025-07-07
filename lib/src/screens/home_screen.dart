@@ -6,6 +6,7 @@ import 'package:logger/logger.dart';
 
 import '../models/iptv_models.dart';
 import '../services/storage_service.dart';
+import '../services/settings_service.dart';
 import '../widgets/item_card.dart';
 import 'item_form_screen.dart';
 
@@ -87,8 +88,10 @@ class _HomeScreenState extends State<HomeScreen> {
     await _load();
   }
 
-  Future<void> _openLink(String link) async {
-    const exePath = r'C:\Program Files\VideoLAN\VLC\vlc.exe';
+  Future<void> _openChannel(IptvItem channel) async {
+    if (channel.links.isEmpty) return;
+    final link = channel.links.first.url;
+    final exePath = await SettingsService().getVlcPath();
     try {
       await Process.start(exePath, [link], runInShell: true);
     } catch (e) {
@@ -98,9 +101,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final title = widget.parentId == null
-        ? 'Dossier Central'
-        : _allItems.firstWhere((e) => e.id == widget.parentId!).name;
+    final String title;
+    if (widget.parentId == null) {
+      title = 'Dossier Central';
+    } else {
+      final parent = _allItems.any((e) => e.id == widget.parentId)
+          ? _allItems.firstWhere((e) => e.id == widget.parentId)
+          : null;
+      title = parent?.name ?? 'Dossier';
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
