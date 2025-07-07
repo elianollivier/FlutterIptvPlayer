@@ -42,31 +42,30 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
     }
   }
 
-  String _formatLink(ChannelLink link) {
-    final details = [link.resolution, link.fps].where((e) => e.isNotEmpty).join(' ');
-    return details.isEmpty ? link.name : '${link.name} [$details]';
-  }
-
   @override
   Widget build(BuildContext context) {
     final ChannelLink? selected =
         widget.item.links.isNotEmpty ? widget.item.links[_selectedIndex] : null;
-    final preview = selected == null ? '' : _formatLink(selected);
+    final preview = selected == null ? '' : selected.formattedName;
 
     final previewWidget = preview.isNotEmpty
         ? Positioned(
             bottom: 0,
             left: 0,
             right: 0,
-            child: GestureDetector(
-              onTap: _toggleExpanded,
-              child: Container(
-                color: Colors.black54,
-                padding: const EdgeInsets.all(4),
-                child: Text(
-                  preview,
-                  style: const TextStyle(color: Colors.white, fontSize: 12),
-                  textAlign: TextAlign.center,
+            child: AnimatedOpacity(
+              duration: const Duration(milliseconds: 200),
+              opacity: (_hovered || _expanded) ? 1 : 0,
+              child: GestureDetector(
+                onTap: _toggleExpanded,
+                child: Container(
+                  color: Colors.black54,
+                  padding: const EdgeInsets.all(4),
+                  child: Text(
+                    preview,
+                    style: const TextStyle(color: Colors.white, fontSize: 12),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ),
             ),
@@ -87,12 +86,16 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
                 top: 4,
                 left: 4,
                 right: 32,
-                child: Text(
-                  widget.item.name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.titleMedium,
+                child: AnimatedOpacity(
+                  duration: const Duration(milliseconds: 200),
+                  opacity: _hovered ? 1 : 0,
+                  child: Text(
+                    widget.item.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                 ),
               ),
             Center(
@@ -111,9 +114,13 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
             Positioned(
               top: 0,
               right: 0,
-              child: IconButton(
-                icon: const Icon(Icons.edit, size: 20),
-                onPressed: widget.onEdit,
+              child: AnimatedOpacity(
+                duration: const Duration(milliseconds: 200),
+                opacity: _hovered ? 1 : 0,
+                child: IconButton(
+                  icon: const Icon(Icons.edit, size: 20),
+                  onPressed: widget.onEdit,
+                ),
               ),
             ),
             previewWidget,
@@ -154,7 +161,7 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 6),
                         child: Text(
-                          _formatLink(widget.item.links[i]),
+                          widget.item.links[i].formattedName,
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                       ),
