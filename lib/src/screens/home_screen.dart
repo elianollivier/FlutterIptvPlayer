@@ -88,17 +88,6 @@ class _HomeScreenState extends State<HomeScreen> {
     await _load();
   }
 
-  Future<void> _openChannel(IptvItem channel) async {
-    if (channel.links.isEmpty) return;
-    final link = channel.links.first.url;
-    final exePath = await SettingsService().getVlcPath();
-    try {
-      await Process.start(exePath, [link], runInShell: true);
-    } catch (e) {
-      _logger.e('Could not open VLC', error: e);
-    }
-  }
-
   Future<void> _openLink(String url) async {
     final exePath = await SettingsService().getVlcPath();
     try {
