@@ -81,26 +81,6 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
         borderRadius: BorderRadius.circular(12),
         child: Stack(
           children: [
-            if (widget.item.type == IptvItemType.folder)
-              Positioned(
-                top: 4,
-                left: 4,
-                right: 4,
-                child: AnimatedOpacity(
-                  duration: const Duration(milliseconds: 200),
-                  opacity: _hovered ? 1 : 0,
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 28),
-                    child: Text(
-                      widget.item.name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                  ),
-                ),
-              ),
             Center(
               child: widget.item.logoPath != null
                   ? Image.file(
@@ -114,6 +94,23 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
                       size: 48,
                     ),
             ),
+            if (widget.item.type == IptvItemType.folder)
+              Positioned(
+                top: 4,
+                left: 4,
+                right: 4,
+                child: AnimatedOpacity(
+                  duration: const Duration(milliseconds: 200),
+                  opacity: _hovered ? 1 : 0,
+                  child: Text(
+                    widget.item.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                ),
+              ),
             Positioned(
               top: 0,
               right: 0,

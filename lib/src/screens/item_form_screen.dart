@@ -162,6 +162,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                 ReorderableListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
+                  buildDefaultDragHandles: false,
                   itemCount: _links.length,
                   onReorder: (oldIndex, newIndex) {
                     setState(() {
@@ -172,62 +173,70 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                   },
                   itemBuilder: (context, index) {
                     final link = _links[index];
-                    return ListTile(
+                    return ReorderableDragStartListener(
                       key: ValueKey('link_$index'),
-                      title: Text(link.formattedName),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(link.url),
-                          if (link.notes.isNotEmpty)
-                            Text(
-                              link.notes,
-                              style: const TextStyle(
-                                fontStyle: FontStyle.italic,
-                                color: Colors.grey,
+                      index: index,
+                      child: ListTile(
+                        title: Text(link.formattedName),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(link.url),
+                            if (link.notes.isNotEmpty)
+                              Text(
+                                link.notes,
+                                style: const TextStyle(
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.grey,
+                                ),
                               ),
+                          ],
+                        ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.edit),
+                              onPressed: () => _editLink(link: link, index: index),
                             ),
-                        ],
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.edit),
-                            onPressed: () => _editLink(link: link, index: index),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.delete),
-                            onPressed: () {
-                              setState(() {
-                                _links.removeAt(index);
-                              });
-                            },
-                          ),
-                        ],
+                            IconButton(
+                              icon: const Icon(Icons.delete),
+                              onPressed: () {
+                                setState(() {
+                                  _links.removeAt(index);
+                                });
+                              },
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   },
                 ),
               ],
               const Spacer(),
-              if (widget.item != null)
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  if (widget.item != null)
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context, {'delete': true});
+                      },
+                      child: const Text('Delete'),
+                    ),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        Navigator.pop(context, _buildItem());
+                      }
+                    },
+                    child: const Text('Save'),
                   ),
-                  onPressed: () {
-                    Navigator.pop(context, {'delete': true});
-                  },
-                  child: const Text('Delete'),
-                ),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    Navigator.pop(context, _buildItem());
-                  }
-                },
-                child: const Text('Save'),
+                ],
               )
             ],
           ),
