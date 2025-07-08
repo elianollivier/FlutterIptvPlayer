@@ -159,18 +159,34 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                     ),
                   ],
                 ),
-                ListView.builder(
+                ReorderableListView.builder(
                   shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
                   itemCount: _links.length,
+                  onReorder: (oldIndex, newIndex) {
+                    setState(() {
+                      if (newIndex > oldIndex) newIndex -= 1;
+                      final item = _links.removeAt(oldIndex);
+                      _links.insert(newIndex, item);
+                    });
+                  },
                   itemBuilder: (context, index) {
                     final link = _links[index];
                     return ListTile(
+                      key: ValueKey('link_$index'),
                       title: Text(link.formattedName),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(link.url),
-                          if (link.notes.isNotEmpty) Text(link.notes),
+                          if (link.notes.isNotEmpty)
+                            Text(
+                              link.notes,
+                              style: const TextStyle(
+                                fontStyle: FontStyle.italic,
+                                color: Colors.grey,
+                              ),
+                            ),
                         ],
                       ),
                       trailing: Row(
