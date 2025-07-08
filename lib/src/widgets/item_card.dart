@@ -85,16 +85,19 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
               Positioned(
                 top: 4,
                 left: 4,
-                right: 32,
+                right: 4,
                 child: AnimatedOpacity(
                   duration: const Duration(milliseconds: 200),
                   opacity: _hovered ? 1 : 0,
-                  child: Text(
-                    widget.item.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.titleMedium,
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 28),
+                    child: Text(
+                      widget.item.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
                   ),
                 ),
               ),

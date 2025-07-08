@@ -8,6 +8,6 @@ void main() {
     await tester.pumpWidget(const MyApp());
 
     expect(find.byType(FloatingActionButton), findsOneWidget);
-    expect(find.text('IPTV Player'), findsOneWidget);
+    expect(find.text('Dossier Central'), findsOneWidget);
   });
 }
