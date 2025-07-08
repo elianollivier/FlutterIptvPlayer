@@ -66,11 +66,21 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(controller: nameCtrl, decoration: const InputDecoration(labelText: 'Name')),
-            TextField(controller: urlCtrl, decoration: const InputDecoration(labelText: 'URL')),
-            TextField(controller: resCtrl, decoration: const InputDecoration(labelText: 'Resolution')),
-            TextField(controller: fpsCtrl, decoration: const InputDecoration(labelText: 'FPS')),
-            TextField(controller: notesCtrl, decoration: const InputDecoration(labelText: 'Notes')),
+            TextField(
+                controller: nameCtrl,
+                decoration: const InputDecoration(labelText: 'Name')),
+            TextField(
+                controller: urlCtrl,
+                decoration: const InputDecoration(labelText: 'URL')),
+            TextField(
+                controller: resCtrl,
+                decoration: const InputDecoration(labelText: 'Resolution')),
+            TextField(
+                controller: fpsCtrl,
+                decoration: const InputDecoration(labelText: 'FPS')),
+            TextField(
+                controller: notesCtrl,
+                decoration: const InputDecoration(labelText: 'Notes')),
           ],
         ),
         actions: [
@@ -116,7 +126,12 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
 
     final imported = await Navigator.push<List<ChannelLink>>(
       context,
-      MaterialPageRoute(builder: (_) => M3uImportScreen(path: path)),
+      MaterialPageRoute(
+        builder: (_) => M3uImportScreen(
+          path: path,
+          existingLinks: _links,
+        ),
+      ),
     );
     if (imported != null && imported.isNotEmpty) {
       setState(() => _links.addAll(imported));
@@ -222,7 +237,8 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                           children: [
                             IconButton(
                               icon: const Icon(Icons.edit),
-                              onPressed: () => _editLink(link: link, index: index),
+                              onPressed: () =>
+                                  _editLink(link: link, index: index),
                             ),
                             IconButton(
                               icon: const Icon(Icons.delete),

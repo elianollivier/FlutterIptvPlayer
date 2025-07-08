@@ -8,9 +8,14 @@ import '../services/m3u_service.dart';
 import '../services/settings_service.dart';
 
 class M3uImportScreen extends StatefulWidget {
-  const M3uImportScreen({super.key, required this.path});
+  const M3uImportScreen({
+    super.key,
+    required this.path,
+    this.existingLinks = const [],
+  });
 
   final String path;
+  final List<ChannelLink> existingLinks;
 
   @override
   State<M3uImportScreen> createState() => _M3uImportScreenState();
@@ -22,6 +27,7 @@ class _M3uImportScreenState extends State<M3uImportScreen> {
   late TextEditingController _queryCtrl;
   List<ChannelLink> _links = [];
   final Set<ChannelLink> _selected = {};
+  late final Set<String> _existingUrls;
   bool _loading = true;
   String _query = '';
 
@@ -29,6 +35,8 @@ class _M3uImportScreenState extends State<M3uImportScreen> {
   void initState() {
     super.initState();
     _queryCtrl = TextEditingController();
+    _existingUrls =
+        widget.existingLinks.map((e) => e.url.toLowerCase()).toSet();
     _search();
   }
 
@@ -48,12 +56,14 @@ class _M3uImportScreenState extends State<M3uImportScreen> {
   }
 
   Future<void> _search() async {
+    if (!mounted) return;
     setState(() => _loading = true);
     final list = await _service.searchFile(
       widget.path,
       query: _query,
       limit: 150,
     );
+    if (!mounted) return;
     setState(() {
       _links = list;
       _loading = false;
@@ -66,31 +76,35 @@ class _M3uImportScreenState extends State<M3uImportScreen> {
       appBar: AppBar(
         title: const Text('Select channels'),
       ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: TextField(
-                    controller: _queryCtrl,
-                    decoration: const InputDecoration(labelText: 'Search'),
-                    onChanged: (v) {
-                      setState(() => _query = v);
-                      if (v.isEmpty || v.length >= 3) {
-                        _search();
-                      }
-                    },
-                  ),
-                ),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: _links.length,
-                    itemBuilder: (context, index) {
-                      final link = _links[index];
-                      final selected = _selected.contains(link);
-                      return ListTile(
-                        leading: Checkbox(
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: TextField(
+              controller: _queryCtrl,
+              decoration: const InputDecoration(labelText: 'Search'),
+              onChanged: (v) {
+                setState(() => _query = v);
+                if (v.isEmpty || v.length >= 3) {
+                  _search();
+                }
+              },
+            ),
+          ),
+          if (_loading) const LinearProgressIndicator(),
+          Expanded(
+            child: ListView.builder(
+              itemCount: _links.length,
+              itemBuilder: (context, index) {
+                final link = _links[index];
+                final isExisting =
+                    _existingUrls.contains(link.url.toLowerCase());
+                final selected = _selected.contains(link);
+                return ListTile(
+                  enabled: !isExisting,
+                  leading: isExisting
+                      ? const Icon(Icons.check, color: Colors.grey)
+                      : Checkbox(
                           value: selected,
                           onChanged: (_) {
                             setState(() {
@@ -102,26 +116,33 @@ class _M3uImportScreenState extends State<M3uImportScreen> {
                             });
                           },
                         ),
-                        title: Text(link.name),
-                        subtitle: Text(link.url),
-                        onTap: () => _openLink(link.url),
-                      );
-                    },
+                  title: Text(
+                    link.name,
+                    style:
+                        isExisting ? const TextStyle(color: Colors.grey) : null,
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: ElevatedButton(
-                    onPressed: _selected.isEmpty
-                        ? null
-                        : () {
-                            Navigator.pop(context, _selected.toList());
-                          },
-                    child: const Text('Add Selected'),
-                  ),
-                )
-              ],
+                  subtitle: Text(link.url,
+                      style: isExisting
+                          ? const TextStyle(color: Colors.grey)
+                          : null),
+                  onTap: isExisting ? null : () => _openLink(link.url),
+                );
+              },
             ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: ElevatedButton(
+              onPressed: _selected.isEmpty
+                  ? null
+                  : () {
+                      Navigator.pop(context, _selected.toList());
+                    },
+              child: const Text('Add Selected'),
+            ),
+          )
+        ],
+      ),
     );
   }
 }
