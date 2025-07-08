@@ -14,4 +14,23 @@ void main() {
     expect(result.first.url, 'http://example.com/1');
     await file.delete();
   });
+
+  test('searchFile limits results and filters by name', () async {
+    final file = File('${Directory.systemTemp.path}/sample_search.m3u');
+    await file.writeAsString(
+      '#EXTM3U\n'
+      '#EXTINF:-1,Channel 1\nhttp://example.com/1\n'
+      '#EXTINF:-1,Another\nhttp://example.com/2\n'
+      '#EXTINF:-1,Channel 3\nhttp://example.com/3',
+    );
+    final service = const M3uService();
+    final result = await service.searchFile(
+      file.path,
+      query: 'channel',
+      limit: 1,
+    );
+    expect(result.length, 1);
+    expect(result.first.name.contains('Channel'), isTrue);
+    await file.delete();
+  });
 }

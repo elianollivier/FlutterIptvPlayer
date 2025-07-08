@@ -14,7 +14,7 @@ class M3uImportScreen extends StatefulWidget {
 
 class _M3uImportScreenState extends State<M3uImportScreen> {
   final M3uService _service = const M3uService();
-  List<ChannelLink> _allLinks = [];
+  List<ChannelLink> _links = [];
   final Set<ChannelLink> _selected = {};
   bool _loading = true;
   String _query = '';
@@ -22,22 +22,21 @@ class _M3uImportScreenState extends State<M3uImportScreen> {
   @override
   void initState() {
     super.initState();
-    _load();
+    _search();
   }
 
-  Future<void> _load() async {
-    final list = await _service.loadFile(widget.path);
+  Future<void> _search() async {
+    setState(() => _loading = true);
+    final list = await _service.searchFile(
+      widget.path,
+      query: _query,
+      limit: 100,
+    );
     setState(() {
-      _allLinks = list;
+      _links = list;
       _loading = false;
     });
   }
-
-  List<ChannelLink> get _filtered => _query.isEmpty
-      ? _allLinks
-      : _allLinks
-          .where((e) => e.name.toLowerCase().contains(_query.toLowerCase()))
-          .toList();
 
   @override
   Widget build(BuildContext context) {
@@ -53,14 +52,19 @@ class _M3uImportScreenState extends State<M3uImportScreen> {
                   padding: const EdgeInsets.all(8),
                   child: TextField(
                     decoration: const InputDecoration(labelText: 'Search'),
-                    onChanged: (v) => setState(() => _query = v),
+                    onChanged: (v) {
+                      setState(() => _query = v);
+                      if (v.isEmpty || v.length >= 3) {
+                        _search();
+                      }
+                    },
                   ),
                 ),
                 Expanded(
                   child: ListView.builder(
-                    itemCount: _filtered.length,
+                    itemCount: _links.length,
                     itemBuilder: (context, index) {
-                      final link = _filtered[index];
+                      final link = _links[index];
                       final selected = _selected.contains(link);
                       return CheckboxListTile(
                         value: selected,
