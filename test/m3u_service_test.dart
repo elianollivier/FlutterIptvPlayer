@@ -6,7 +6,8 @@ import 'package:flutter_iptv_player/src/services/m3u_service.dart';
 void main() {
   test('parses m3u file', () async {
     final file = File('${Directory.systemTemp.path}/sample.m3u');
-    await file.writeAsString('#EXTM3U\n#EXTINF:-1,Channel 1\nhttp://example.com/1');
+    await file
+        .writeAsString('#EXTM3U\n#EXTINF:-1,Channel 1\nhttp://example.com/1');
     final service = const M3uService();
     final result = await service.loadFile(file.path);
     expect(result.length, 1);
@@ -31,6 +32,20 @@ void main() {
     );
     expect(result.length, 1);
     expect(result.first.name.contains('Channel'), isTrue);
+    await file.delete();
+  });
+
+  test('searchFile uses default limit of 150', () async {
+    final file = File('${Directory.systemTemp.path}/sample_limit.m3u');
+    final buffer = StringBuffer('#EXTM3U\n');
+    for (var i = 0; i < 200; i++) {
+      buffer.writeln('#EXTINF:-1,Channel $i');
+      buffer.writeln('http://example.com/$i');
+    }
+    await file.writeAsString(buffer.toString());
+    final service = const M3uService();
+    final result = await service.searchFile(file.path);
+    expect(result.length, 150);
     await file.delete();
   });
 }

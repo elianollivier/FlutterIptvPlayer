@@ -9,10 +9,8 @@ class M3uService {
   Future<List<ChannelLink>> loadFile(String path) async {
     final file = File(path);
     if (!await file.exists()) return [];
-    final lines = file
-        .openRead()
-        .transform(utf8.decoder)
-        .transform(const LineSplitter());
+    final lines =
+        file.openRead().transform(utf8.decoder).transform(const LineSplitter());
     String? name;
     final List<ChannelLink> result = [];
     await for (final line in lines) {
@@ -42,14 +40,12 @@ class M3uService {
   Future<List<ChannelLink>> searchFile(
     String path, {
     String query = '',
-    int limit = 100,
+    int limit = 150,
   }) async {
     final file = File(path);
     if (!await file.exists()) return [];
-    final lines = file
-        .openRead()
-        .transform(utf8.decoder)
-        .transform(const LineSplitter());
+    final lines =
+        file.openRead().transform(utf8.decoder).transform(const LineSplitter());
     String? name;
     final lowerQuery = query.toLowerCase();
     final List<ChannelLink> result = [];

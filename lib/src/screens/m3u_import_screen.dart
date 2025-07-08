@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 
 import '../models/iptv_models.dart';
 import '../services/m3u_service.dart';
+import '../services/settings_service.dart';
 
 class M3uImportScreen extends StatefulWidget {
   const M3uImportScreen({super.key, required this.path});
@@ -14,6 +18,8 @@ class M3uImportScreen extends StatefulWidget {
 
 class _M3uImportScreenState extends State<M3uImportScreen> {
   final M3uService _service = const M3uService();
+  final Logger _logger = Logger();
+  late TextEditingController _queryCtrl;
   List<ChannelLink> _links = [];
   final Set<ChannelLink> _selected = {};
   bool _loading = true;
@@ -22,7 +28,23 @@ class _M3uImportScreenState extends State<M3uImportScreen> {
   @override
   void initState() {
     super.initState();
+    _queryCtrl = TextEditingController();
     _search();
+  }
+
+  @override
+  void dispose() {
+    _queryCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _openLink(String url) async {
+    final exePath = await SettingsService().getVlcPath();
+    try {
+      await Process.start(exePath, [url], runInShell: true);
+    } catch (e) {
+      _logger.e('Could not open VLC', error: e);
+    }
   }
 
   Future<void> _search() async {
@@ -30,7 +52,7 @@ class _M3uImportScreenState extends State<M3uImportScreen> {
     final list = await _service.searchFile(
       widget.path,
       query: _query,
-      limit: 100,
+      limit: 150,
     );
     setState(() {
       _links = list;
@@ -51,6 +73,7 @@ class _M3uImportScreenState extends State<M3uImportScreen> {
                 Padding(
                   padding: const EdgeInsets.all(8),
                   child: TextField(
+                    controller: _queryCtrl,
                     decoration: const InputDecoration(labelText: 'Search'),
                     onChanged: (v) {
                       setState(() => _query = v);
@@ -66,19 +89,22 @@ class _M3uImportScreenState extends State<M3uImportScreen> {
                     itemBuilder: (context, index) {
                       final link = _links[index];
                       final selected = _selected.contains(link);
-                      return CheckboxListTile(
-                        value: selected,
+                      return ListTile(
+                        leading: Checkbox(
+                          value: selected,
+                          onChanged: (_) {
+                            setState(() {
+                              if (selected) {
+                                _selected.remove(link);
+                              } else {
+                                _selected.add(link);
+                              }
+                            });
+                          },
+                        ),
                         title: Text(link.name),
                         subtitle: Text(link.url),
-                        onChanged: (_) {
-                          setState(() {
-                            if (selected) {
-                              _selected.remove(link);
-                            } else {
-                              _selected.add(link);
-                            }
-                          });
-                        },
+                        onTap: () => _openLink(link.url),
                       );
                     },
                   ),
