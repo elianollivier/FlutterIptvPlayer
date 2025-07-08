@@ -2,6 +2,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
+import 'm3u_import_screen.dart';
+
 import '../models/iptv_models.dart';
 
 class ItemFormScreen extends StatefulWidget {
@@ -106,6 +108,21 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
     }
   }
 
+  Future<void> _importM3u() async {
+    final result = await FilePicker.platform
+        .pickFiles(type: FileType.custom, allowedExtensions: ['m3u']);
+    final path = result?.files.single.path;
+    if (path == null) return;
+
+    final imported = await Navigator.push<List<ChannelLink>>(
+      context,
+      MaterialPageRoute(builder: (_) => M3uImportScreen(path: path)),
+    );
+    if (imported != null && imported.isNotEmpty) {
+      setState(() => _links.addAll(imported));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -153,9 +170,17 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text('Links'),
-                    IconButton(
-                      onPressed: () => _editLink(),
-                      icon: const Icon(Icons.add),
+                    Row(
+                      children: [
+                        IconButton(
+                          onPressed: _importM3u,
+                          icon: const Icon(Icons.file_upload),
+                        ),
+                        IconButton(
+                          onPressed: () => _editLink(),
+                          icon: const Icon(Icons.add),
+                        ),
+                      ],
                     ),
                   ],
                 ),
