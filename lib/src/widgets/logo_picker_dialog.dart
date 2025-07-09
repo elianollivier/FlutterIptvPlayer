@@ -45,7 +45,7 @@ class _LogoPickerDialogState extends State<LogoPickerDialog> {
         child: GridView.builder(
           shrinkWrap: true,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
+            crossAxisCount: 4,
             crossAxisSpacing: 4,
             mainAxisSpacing: 4,
           ),
@@ -58,9 +58,27 @@ class _LogoPickerDialogState extends State<LogoPickerDialog> {
               );
             }
             final file = _logos[index];
-            return GestureDetector(
-              onTap: () => Navigator.pop(context, file.path),
-              child: Image.file(file, fit: BoxFit.contain),
+            return Stack(
+              fit: StackFit.expand,
+              children: [
+                GestureDetector(
+                  onTap: () => Navigator.pop(context, file.path),
+                  child: Image.file(file, fit: BoxFit.contain),
+                ),
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: IconButton(
+                    iconSize: 18,
+                    splashRadius: 18,
+                    onPressed: () async {
+                      await _service.deleteLogo(file.path);
+                      await _load();
+                    },
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                  ),
+                ),
+              ],
             );
           },
         ),

@@ -158,7 +158,10 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
                             : Colors.transparent,
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 6),
-                        child: LinkLabel(link: widget.item.links[i]),
+                        child: LinkLabel(
+                          link: widget.item.links[i],
+                          dark: i == _selectedIndex,
+                        ),
                       ),
                     ),
                 ],

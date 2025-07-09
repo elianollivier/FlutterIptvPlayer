@@ -60,8 +60,21 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
     final nameCtrl = TextEditingController(text: link?.name ?? '');
     final urlCtrl = TextEditingController(text: link?.url ?? '');
     final resCtrl = TextEditingController(text: link?.resolution ?? '');
-    final fpsCtrl = TextEditingController(text: link?.fps ?? '');
+    final fpsValue = int.tryParse(link?.fps ?? '');
+    final fpsCtrl = TextEditingController(
+      text: fpsValue != null ? '$fpsValue' : '',
+    );
     final notesCtrl = TextEditingController(text: link?.notes ?? '');
+
+    const resolutions = [
+      '240p',
+      '360p',
+      '480p',
+      '560p',
+      'HD',
+      'FHD',
+      '4K',
+    ];
 
     final result = await showDialog<ChannelLink>(
       context: context,
@@ -79,16 +92,10 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
               decoration: const InputDecoration(labelText: 'URL'),
             ),
             DropdownButtonFormField<String>(
-              value: resCtrl.text.isEmpty ? null : resCtrl.text,
-              items: const [
-                '240p',
-                '360p',
-                '480p',
-                '560p',
-                'HD',
-                'FDP',
-                '4K',
-              ].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+              value: resolutions.contains(resCtrl.text) ? resCtrl.text : null,
+              items: resolutions
+                  .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                  .toList(),
               decoration: const InputDecoration(labelText: 'Resolution'),
               onChanged: (v) => resCtrl.text = v ?? '',
             ),
