@@ -39,23 +39,24 @@ class _LogoPickerDialogState extends State<LogoPickerDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () => Navigator.pop(context),
-              ),
-              const Expanded(
-                child: Text('Select Logo', textAlign: TextAlign.center),
-              ),
-              IconButton(
-                icon: const Icon(Icons.add_a_photo),
-                onPressed: _import,
-              ),
-            ],
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: Row(
+              children: [
+                IconButton(
+                  padding: EdgeInsets.zero,
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: () => Navigator.pop(context),
+                ),
+                const Expanded(
+                  child: Text('Select Logo', textAlign: TextAlign.center),
+                ),
+              ],
+            ),
           ),
           SizedBox(
             width: double.maxFinite,
@@ -66,9 +67,12 @@ class _LogoPickerDialogState extends State<LogoPickerDialog> {
                 crossAxisSpacing: 4,
                 mainAxisSpacing: 4,
               ),
-              itemCount: _logos.length,
+              itemCount: _logos.length + 1,
               itemBuilder: (context, index) {
-                final file = _logos[index];
+                if (index == 0) {
+                  return _AddLogoTile(onAdd: _import);
+                }
+                final file = _logos[index - 1];
                 return _LogoTile(
                   file: file,
                   onDelete: () async {
@@ -87,7 +91,8 @@ class _LogoPickerDialogState extends State<LogoPickerDialog> {
 }
 
 class _LogoTile extends StatefulWidget {
-  const _LogoTile({required this.file, required this.onDelete, required this.onSelect});
+  const _LogoTile(
+      {required this.file, required this.onDelete, required this.onSelect});
 
   final File file;
   final VoidCallback onDelete;
@@ -127,6 +132,26 @@ class _LogoTileState extends State<_LogoTile> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _AddLogoTile extends StatelessWidget {
+  const _AddLogoTile({required this.onAdd});
+
+  final VoidCallback onAdd;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onAdd,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceVariant,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: const Center(child: Icon(Icons.add)),
       ),
     );
   }

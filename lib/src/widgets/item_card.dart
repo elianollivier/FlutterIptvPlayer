@@ -101,9 +101,13 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
                   duration: const Duration(milliseconds: 200),
                   opacity: _hovered ? 1 : 0,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .surface
+                          .withOpacity(0.8),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
@@ -111,23 +115,33 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.center,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium
-                          ?.copyWith(color: Theme.of(context).colorScheme.onSurface),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurface),
                     ),
                   ),
                 ),
               ),
             Positioned(
-              top: 0,
-              right: 0,
+              top: 4,
+              right: 4,
               child: AnimatedOpacity(
                 duration: const Duration(milliseconds: 200),
                 opacity: _hovered ? 1 : 0,
-                child: IconButton(
-                  icon: const Icon(Icons.edit, size: 20),
-                  onPressed: widget.onEdit,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color:
+                        Theme.of(context).colorScheme.surface.withOpacity(0.8),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: IconButton(
+                    iconSize: 18,
+                    padding: EdgeInsets.zero,
+                    splashRadius: 20,
+                    hoverColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    icon: const Icon(Icons.edit),
+                    onPressed: widget.onEdit,
+                  ),
                 ),
               ),
             ),
