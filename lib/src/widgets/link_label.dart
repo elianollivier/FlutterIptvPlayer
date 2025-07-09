@@ -52,8 +52,8 @@ class _InfoChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final bg = dark ? Colors.black87 : scheme.primaryContainer;
-    final fg = dark ? Colors.white : scheme.onPrimaryContainer;
+    final bg = dark ? scheme.secondaryContainer : scheme.primaryContainer;
+    final fg = dark ? scheme.onSecondaryContainer : scheme.onPrimaryContainer;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(

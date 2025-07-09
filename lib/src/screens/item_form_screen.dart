@@ -178,15 +178,20 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
           key: _formKey,
           child: Column(
             children: [
-              DropdownButtonFormField<IptvItemType>(
-                value: _type,
-                items: IptvItemType.values
-                    .map((e) => DropdownMenuItem(
-                          value: e,
-                          child: Text(e.name),
-                        ))
-                    .toList(),
-                onChanged: (val) => setState(() => _type = val!),
+              SegmentedButton<IptvItemType>(
+                segments: const [
+                  ButtonSegment(
+                    value: IptvItemType.folder,
+                    label: Text('Folder'),
+                  ),
+                  ButtonSegment(
+                    value: IptvItemType.channel,
+                    label: Text('Channel'),
+                  ),
+                ],
+                selected: <IptvItemType>{_type},
+                onSelectionChanged: (vals) =>
+                    setState(() => _type = vals.first),
               ),
               TextFormField(
                 controller: _nameCtrl,
