@@ -1,9 +1,12 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:uuid/uuid.dart';
 
 import 'm3u_import_screen.dart';
 
+import '../widgets/link_label.dart';
+import '../widgets/logo_picker_dialog.dart';
 import '../models/iptv_models.dart';
 
 class ItemFormScreen extends StatefulWidget {
@@ -44,11 +47,12 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
   }
 
   Future<void> _pickLogo() async {
-    final result = await FilePicker.platform.pickFiles(type: FileType.image);
-    if (result != null && result.files.single.path != null) {
-      setState(() {
-        _logoPath = result.files.single.path;
-      });
+    final result = await showDialog<String>(
+      context: context,
+      builder: (_) => const LogoPickerDialog(),
+    );
+    if (result != null) {
+      setState(() => _logoPath = result);
     }
   }
 
@@ -67,20 +71,37 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
-                controller: nameCtrl,
-                decoration: const InputDecoration(labelText: 'Name')),
+              controller: nameCtrl,
+              decoration: const InputDecoration(labelText: 'Name'),
+            ),
             TextField(
-                controller: urlCtrl,
-                decoration: const InputDecoration(labelText: 'URL')),
+              controller: urlCtrl,
+              decoration: const InputDecoration(labelText: 'URL'),
+            ),
+            DropdownButtonFormField<String>(
+              value: resCtrl.text.isEmpty ? null : resCtrl.text,
+              items: const [
+                '240p',
+                '360p',
+                '480p',
+                '560p',
+                'HD',
+                'FDP',
+                '4K',
+              ].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+              decoration: const InputDecoration(labelText: 'Resolution'),
+              onChanged: (v) => resCtrl.text = v ?? '',
+            ),
             TextField(
-                controller: resCtrl,
-                decoration: const InputDecoration(labelText: 'Resolution')),
+              controller: fpsCtrl,
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              decoration: const InputDecoration(labelText: 'FPS'),
+            ),
             TextField(
-                controller: fpsCtrl,
-                decoration: const InputDecoration(labelText: 'FPS')),
-            TextField(
-                controller: notesCtrl,
-                decoration: const InputDecoration(labelText: 'Notes')),
+              controller: notesCtrl,
+              decoration: const InputDecoration(labelText: 'Notes'),
+            ),
           ],
         ),
         actions: [
@@ -217,7 +238,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                       key: ValueKey('link_$index'),
                       index: index,
                       child: ListTile(
-                        title: Text(link.formattedName),
+                        title: LinkLabel(link: link),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
