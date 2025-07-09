@@ -82,16 +82,18 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
         title: const Text('Link'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             TextField(
               controller: nameCtrl,
               decoration: const InputDecoration(labelText: 'Name'),
             ),
+            const SizedBox(height: 12),
             TextField(
               controller: urlCtrl,
               decoration: const InputDecoration(labelText: 'URL'),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             DropdownButtonFormField<String>(
               value: resolutions.contains(resCtrl.text) ? resCtrl.text : null,
               items: resolutions
@@ -108,12 +110,14 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
               onChanged: (v) => resCtrl.text = v ?? '',
               dropdownColor: Theme.of(context).colorScheme.surfaceVariant,
             ),
+            const SizedBox(height: 12),
             TextField(
               controller: fpsCtrl,
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               decoration: const InputDecoration(labelText: 'FPS'),
             ),
+            const SizedBox(height: 12),
             TextField(
               controller: notesCtrl,
               decoration: const InputDecoration(labelText: 'Notes'),
@@ -302,22 +306,34 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   if (widget.item != null)
-                    ElevatedButton(
+                    ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
                       ),
                       onPressed: () {
                         Navigator.pop(context, {'delete': true});
                       },
-                      child: const Text('Delete'),
+                      icon: const Icon(Icons.delete),
+                      label: const Text('Delete'),
                     ),
-                  ElevatedButton(
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
+                    ),
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         Navigator.pop(context, _buildItem());
                       }
                     },
-                    child: const Text('Save'),
+                    icon: const Icon(Icons.save),
+                    label: const Text('Save'),
                   ),
                 ],
               )

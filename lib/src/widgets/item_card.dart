@@ -27,6 +27,7 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
   bool _hovered = false;
   bool _expanded = false;
   int _selectedIndex = 0;
+  int? _hoveredIndex;
 
   void _open() {
     if (widget.item.type == IptvItemType.folder) {
@@ -110,9 +111,10 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
                           .withOpacity(0.8),
                       borderRadius: BorderRadius.circular(4),
                     ),
-                    child: Row(
+                    child: Stack(
+                      alignment: Alignment.center,
                       children: [
-                        Expanded(
+                        Center(
                           child: Text(
                             widget.item.name,
                             maxLines: 1,
@@ -127,14 +129,17 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
                                 ),
                           ),
                         ),
-                        IconButton(
-                          iconSize: 18,
-                          padding: EdgeInsets.zero,
-                          splashRadius: 20,
-                          hoverColor: Colors.transparent,
-                          highlightColor: Colors.transparent,
-                          icon: const Icon(Icons.edit),
-                          onPressed: widget.onEdit,
+                        Positioned(
+                          right: 0,
+                          child: IconButton(
+                            iconSize: 18,
+                            padding: EdgeInsets.zero,
+                            splashRadius: 20,
+                            hoverColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            icon: const Icon(Icons.edit),
+                            onPressed: widget.onEdit,
+                          ),
                         ),
                       ],
                     ),
@@ -197,6 +202,9 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
                 children: [
                   for (int i = 0; i < widget.item.links.length; i++)
                     InkWell(
+                      onHover: (hover) => setState(
+                        () => _hoveredIndex = hover ? i : null,
+                      ),
                       onTap: () => setState(() {
                         _selectedIndex = i;
                         _expanded = false;
@@ -204,8 +212,10 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
                       child: Container(
                         width: double.infinity,
                         color: i == _selectedIndex
-                            ? Colors.grey.shade700
-                            : Colors.transparent,
+                            ? Colors.grey.shade600
+                            : _hoveredIndex == i
+                                ? Colors.grey.shade300
+                                : Colors.transparent,
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 6),
                         child: LinkLabel(
