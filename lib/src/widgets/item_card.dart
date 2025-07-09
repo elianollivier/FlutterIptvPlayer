@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import 'link_label.dart';
 import '../models/iptv_models.dart';
 
 class ItemCard extends StatefulWidget {
@@ -46,9 +47,8 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final ChannelLink? selected =
         widget.item.links.isNotEmpty ? widget.item.links[_selectedIndex] : null;
-    final preview = selected == null ? '' : selected.formattedName;
 
-    final previewWidget = preview.isNotEmpty
+    final previewWidget = selected != null
         ? Positioned(
             bottom: 0,
             left: 0,
@@ -61,10 +61,8 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
                 child: Container(
                   color: Colors.black54,
                   padding: const EdgeInsets.all(4),
-                  child: Text(
-                    preview,
-                    style: const TextStyle(color: Colors.white, fontSize: 12),
-                    textAlign: TextAlign.center,
+                  child: Center(
+                    child: LinkLabel(link: selected, dark: true),
                   ),
                 ),
               ),
@@ -160,10 +158,7 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
                             : Colors.transparent,
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 6),
-                        child: Text(
-                          widget.item.links[i].formattedName,
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
+                        child: LinkLabel(link: widget.item.links[i]),
                       ),
                     ),
                 ],
