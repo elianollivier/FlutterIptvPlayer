@@ -110,41 +110,63 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
                           .withOpacity(0.8),
                       borderRadius: BorderRadius.circular(4),
                     ),
-                    child: Text(
-                      widget.item.name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            widget.item.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface),
+                          ),
+                        ),
+                        IconButton(
+                          iconSize: 18,
+                          padding: EdgeInsets.zero,
+                          splashRadius: 20,
+                          hoverColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                          icon: const Icon(Icons.edit),
+                          onPressed: widget.onEdit,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              )
+            else
+              Positioned(
+                top: 4,
+                right: 4,
+                child: AnimatedOpacity(
+                  duration: const Duration(milliseconds: 200),
+                  opacity: _hovered ? 1 : 0,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .surface
+                          .withOpacity(0.8),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: IconButton(
+                      iconSize: 18,
+                      padding: EdgeInsets.zero,
+                      splashRadius: 20,
+                      hoverColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      icon: const Icon(Icons.edit),
+                      onPressed: widget.onEdit,
                     ),
                   ),
                 ),
               ),
-            Positioned(
-              top: 4,
-              right: 4,
-              child: AnimatedOpacity(
-                duration: const Duration(milliseconds: 200),
-                opacity: _hovered ? 1 : 0,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color:
-                        Theme.of(context).colorScheme.surface.withOpacity(0.8),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: IconButton(
-                    iconSize: 18,
-                    padding: EdgeInsets.zero,
-                    splashRadius: 20,
-                    hoverColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    icon: const Icon(Icons.edit),
-                    onPressed: widget.onEdit,
-                  ),
-                ),
-              ),
-            ),
             previewWidget,
           ],
         ),
@@ -157,11 +179,14 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
           ? Container(
               margin: const EdgeInsets.only(top: 4),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceVariant,
-                borderRadius: BorderRadius.circular(8),
+                color: Theme.of(context)
+                    .colorScheme
+                    .surfaceVariant
+                    .withOpacity(0.95),
+                borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
+                    color: Colors.black.withOpacity(0.3),
                     blurRadius: 4,
                   ),
                 ],
