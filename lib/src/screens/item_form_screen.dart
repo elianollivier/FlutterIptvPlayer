@@ -96,8 +96,15 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
               items: resolutions
                   .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                   .toList(),
-              decoration: const InputDecoration(labelText: 'Resolution'),
+              decoration: InputDecoration(
+                labelText: 'Resolution',
+                filled: true,
+                fillColor: Theme.of(context).colorScheme.surfaceVariant,
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+              ),
               onChanged: (v) => resCtrl.text = v ?? '',
+              dropdownColor: Theme.of(context).colorScheme.surfaceVariant,
             ),
             TextField(
               controller: fpsCtrl,
