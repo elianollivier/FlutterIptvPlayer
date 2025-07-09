@@ -58,30 +58,31 @@ class _LogoPickerDialogState extends State<LogoPickerDialog> {
               ],
             ),
           ),
-          SizedBox(
-            width: double.maxFinite,
-            child: GridView.builder(
-              shrinkWrap: true,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 4,
-                crossAxisSpacing: 4,
-                mainAxisSpacing: 4,
+          Expanded(
+            child: SizedBox(
+              width: double.maxFinite,
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 4,
+                  crossAxisSpacing: 4,
+                  mainAxisSpacing: 4,
+                ),
+                itemCount: _logos.length + 1,
+                itemBuilder: (context, index) {
+                  if (index == 0) {
+                    return _AddLogoTile(onAdd: _import);
+                  }
+                  final file = _logos[index - 1];
+                  return _LogoTile(
+                    file: file,
+                    onDelete: () async {
+                      await _service.deleteLogo(file.path);
+                      await _load();
+                    },
+                    onSelect: () => Navigator.pop(context, file.path),
+                  );
+                },
               ),
-              itemCount: _logos.length + 1,
-              itemBuilder: (context, index) {
-                if (index == 0) {
-                  return _AddLogoTile(onAdd: _import);
-                }
-                final file = _logos[index - 1];
-                return _LogoTile(
-                  file: file,
-                  onDelete: () async {
-                    await _service.deleteLogo(file.path);
-                    await _load();
-                  },
-                  onSelect: () => Navigator.pop(context, file.path),
-                );
-              },
             ),
           ),
         ],
@@ -115,7 +116,17 @@ class _LogoTileState extends State<_LogoTile> {
         children: [
           GestureDetector(
             onTap: widget.onSelect,
-            child: Image.file(widget.file, fit: BoxFit.contain),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Image.file(widget.file, fit: BoxFit.contain),
+                AnimatedOpacity(
+                  duration: const Duration(milliseconds: 200),
+                  opacity: _hovered ? 0.2 : 0,
+                  child: Container(color: Colors.black),
+                ),
+              ],
+            ),
           ),
           Positioned(
             top: 0,
