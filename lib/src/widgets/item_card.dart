@@ -117,13 +117,14 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
                             widget.item.name,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
                             style: Theme.of(context)
                                 .textTheme
                                 .titleMedium
                                 ?.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurface),
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface,
+                                ),
                           ),
                         ),
                         IconButton(
@@ -203,7 +204,7 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
                       child: Container(
                         width: double.infinity,
                         color: i == _selectedIndex
-                            ? Theme.of(context).colorScheme.primaryContainer
+                            ? Colors.grey.shade700
                             : Colors.transparent,
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 6),
