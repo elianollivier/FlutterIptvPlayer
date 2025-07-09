@@ -91,6 +91,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
               controller: urlCtrl,
               decoration: const InputDecoration(labelText: 'URL'),
             ),
+            const SizedBox(height: 8),
             DropdownButtonFormField<String>(
               value: resolutions.contains(resCtrl.text) ? resCtrl.text : null,
               items: resolutions
@@ -103,6 +104,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                 border:
                     OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
               ),
+              isExpanded: true,
               onChanged: (v) => resCtrl.text = v ?? '',
               dropdownColor: Theme.of(context).colorScheme.surfaceVariant,
             ),

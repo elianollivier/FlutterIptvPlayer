@@ -151,7 +151,13 @@ class _AddLogoTile extends StatelessWidget {
           color: Theme.of(context).colorScheme.surfaceVariant,
           borderRadius: BorderRadius.circular(8),
         ),
-        child: const Center(child: Icon(Icons.add)),
+        child: Center(
+          child: Icon(
+            Icons.add,
+            size: 48,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+        ),
       ),
     );
   }
