@@ -166,12 +166,21 @@ class _PlaylistFormScreenState extends State<PlaylistFormScreen> {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      TextButton(
+                      OutlinedButton(
                         onPressed: () => Navigator.pop(context),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
                         child: const Text('Cancel'),
                       ),
                       const SizedBox(width: 8),
-                      TextButton(
+                      ElevatedButton(
                         onPressed: _path == null
                             ? null
                             : () {
@@ -193,6 +202,15 @@ class _PlaylistFormScreenState extends State<PlaylistFormScreen> {
                                   );
                                 }
                               },
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
                         child: const Text('Save'),
                       ),
                     ],

@@ -12,6 +12,7 @@ class M3uService {
     final lines =
         file.openRead().transform(utf8.decoder).transform(const LineSplitter());
     String? name;
+    String? logo;
     final List<ChannelLink> result = [];
     await for (final line in lines) {
       if (line.startsWith('#EXTINF')) {
@@ -21,16 +22,21 @@ class M3uService {
         } else {
           name = null;
         }
+        final match =
+            RegExp('tvg-logo="([^"]*)"', caseSensitive: false).firstMatch(line);
+        logo = match != null ? match.group(1) : '';
       } else if (line.trim().isNotEmpty && !line.startsWith('#')) {
         if (name != null) {
           result.add(ChannelLink(
             name: name,
             url: line.trim(),
+            logo: logo ?? '',
             resolution: '',
             fps: '',
             notes: '',
           ));
           name = null;
+          logo = null;
         }
       }
     }
@@ -47,6 +53,7 @@ class M3uService {
     final lines =
         file.openRead().transform(utf8.decoder).transform(const LineSplitter());
     String? name;
+    String? logo;
     final lowerQuery = query.toLowerCase();
     final List<ChannelLink> result = [];
     await for (final line in lines) {
@@ -57,11 +64,15 @@ class M3uService {
         } else {
           name = null;
         }
+        final match =
+            RegExp('tvg-logo="([^"]*)"', caseSensitive: false).firstMatch(line);
+        logo = match != null ? match.group(1) : '';
       } else if (line.trim().isNotEmpty && !line.startsWith('#')) {
         if (name != null) {
           final link = ChannelLink(
             name: name,
             url: line.trim(),
+            logo: logo ?? '',
             resolution: '',
             fps: '',
             notes: '',
@@ -72,6 +83,7 @@ class M3uService {
             if (result.length >= limit) break;
           }
           name = null;
+          logo = null;
         }
       }
     }

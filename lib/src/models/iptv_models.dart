@@ -5,6 +5,7 @@ enum IptvItemType { folder, channel }
 class ChannelLink {
   final String name;
   final String url;
+  final String logo;
   final String resolution;
   final String fps;
   final String notes;
@@ -12,6 +13,7 @@ class ChannelLink {
   ChannelLink({
     required this.name,
     required this.url,
+    this.logo = '',
     required this.resolution,
     required this.fps,
     required this.notes,
@@ -20,6 +22,7 @@ class ChannelLink {
   factory ChannelLink.fromJson(Map<String, dynamic> json) => ChannelLink(
         name: json['name'] as String,
         url: json['url'] as String,
+        logo: json['logo'] as String? ?? '',
         resolution: json['resolution'] as String? ?? '',
         fps: json['fps'] as String? ?? '',
         notes: json['notes'] as String? ?? '',
@@ -28,6 +31,7 @@ class ChannelLink {
   Map<String, dynamic> toJson() => {
         'name': name,
         'url': url,
+        'logo': logo,
         'resolution': resolution,
         'fps': fps,
         'notes': notes,
