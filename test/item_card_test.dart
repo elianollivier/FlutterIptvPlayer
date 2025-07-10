@@ -14,6 +14,7 @@ void main() {
       ChannelLink(
         name: 'L1',
         url: 'https://example.com/very/long/path/stream.m3u8',
+        logo: '',
         resolution: '',
         fps: '',
         notes: '',
