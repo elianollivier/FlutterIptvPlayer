@@ -9,6 +9,7 @@ import '../services/storage_service.dart';
 import '../services/settings_service.dart';
 import '../widgets/item_card.dart';
 import 'item_form_screen.dart';
+import 'playlist_list_screen.dart';
 import 'package:reorderables/reorderables.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -134,13 +135,25 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.playlist_play),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const PlaylistListScreen(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
           final count =
               (constraints.maxWidth / 160).floor().clamp(1, 6).toInt();
-          final itemWidth =
-              (constraints.maxWidth - (count - 1) * 8) / count;
+          final itemWidth = (constraints.maxWidth - (count - 1) * 8) / count;
           return SingleChildScrollView(
             padding: const EdgeInsets.all(8),
             child: ReorderableWrap(

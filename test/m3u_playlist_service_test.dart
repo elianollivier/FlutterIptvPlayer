@@ -23,11 +23,19 @@ void main() {
   test('save and load playlists', () async {
     final service = const M3uPlaylistService();
     final items = [
-      M3uPlaylist(id: '1', name: 'Test', path: '/tmp/file.m3u', logoPath: null),
+      M3uPlaylist(
+        id: '1',
+        name: 'Test',
+        path: '/tmp/file.m3u',
+        logoPath: null,
+        url: 'http://test.com',
+        lastDownload: DateTime.now(),
+      ),
     ];
     await service.save(items);
     final loaded = await service.load();
     expect(loaded.length, 1);
     expect(loaded.first.name, 'Test');
+    expect(loaded.first.url, 'http://test.com');
   });
 }
