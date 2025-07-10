@@ -3,9 +3,12 @@ import '../models/m3u_playlist.dart';
 import '../services/m3u_playlist_service.dart';
 import '../widgets/playlist_card.dart';
 import 'playlist_form_screen.dart';
+import 'playlist_view_screen.dart';
 
 class PlaylistListScreen extends StatefulWidget {
-  const PlaylistListScreen({super.key});
+  const PlaylistListScreen({super.key, this.selectMode = false});
+
+  final bool selectMode;
 
   @override
   State<PlaylistListScreen> createState() => _PlaylistListScreenState();
@@ -59,7 +62,16 @@ class _PlaylistListScreenState extends State<PlaylistListScreen> {
   }
 
   void _select(M3uPlaylist pl) {
-    Navigator.pop(context, pl);
+    if (widget.selectMode) {
+      Navigator.pop(context, pl);
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => PlaylistViewScreen(playlist: pl),
+        ),
+      );
+    }
   }
 
   @override

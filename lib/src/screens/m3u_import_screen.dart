@@ -86,7 +86,7 @@ class _M3uImportScreenState extends State<M3uImportScreen> {
                 : '${(received / (1024 * 1024)).toStringAsFixed(2)} MB';
 
             return AlertDialog(
-              title: Text('Downloading ${link.name}'),
+              title: Text('Téléchargement de ${link.name}'),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -146,7 +146,7 @@ class _M3uImportScreenState extends State<M3uImportScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Select channels'),
+        title: const Text('Sélectionner des chaînes'),
       ),
       body: Column(
         children: [
@@ -154,7 +154,7 @@ class _M3uImportScreenState extends State<M3uImportScreen> {
             padding: const EdgeInsets.all(8),
             child: TextField(
               controller: _queryCtrl,
-              decoration: const InputDecoration(labelText: 'Search'),
+              decoration: const InputDecoration(labelText: 'Rechercher'),
               onChanged: (v) {
                 setState(() => _query = v);
                 if (v.isEmpty || v.length >= 3) {
@@ -174,11 +174,12 @@ class _M3uImportScreenState extends State<M3uImportScreen> {
                 final selected = _selected.contains(link);
                 return ListTile(
                   enabled: !isExisting,
+                  minVerticalPadding: 8,
                   leading: link.logo.isNotEmpty
                       ? Image.network(
                           link.logo,
-                          width: 48,
-                          height: 48,
+                          width: 64,
+                          height: 64,
                           errorBuilder: (_, __, ___) =>
                               const Icon(Icons.image_not_supported),
                         )
@@ -229,7 +230,7 @@ class _M3uImportScreenState extends State<M3uImportScreen> {
                   : () {
                       Navigator.pop(context, _selected.toList());
                     },
-              child: const Text('Add Selected'),
+              child: const Text('Ajouter la sélection'),
             ),
           )
         ],
