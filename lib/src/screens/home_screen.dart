@@ -9,6 +9,7 @@ import '../services/storage_service.dart';
 import '../services/settings_service.dart';
 import '../widgets/item_card.dart';
 import 'item_form_screen.dart';
+import 'package:reorderables/reorderables.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, this.parentId});
@@ -97,6 +98,28 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<void> _reorder(int oldIndex, int newIndex) async {
+    final childItems =
+        _allItems.where((e) => e.parentId == widget.parentId).toList();
+    final item = childItems.removeAt(oldIndex);
+    childItems.insert(newIndex, item);
+
+    final List<IptvItem> newAll = [];
+    int childIndex = 0;
+    for (final original in _allItems) {
+      if (original.parentId == widget.parentId) {
+        newAll.add(childItems[childIndex++]);
+      } else {
+        newAll.add(original);
+      }
+    }
+
+    setState(() {
+      _allItems = newAll;
+    });
+    await _storage.saveItems(_allItems);
+  }
+
   @override
   Widget build(BuildContext context) {
     final String title;
@@ -116,28 +139,39 @@ class _HomeScreenState extends State<HomeScreen> {
         builder: (context, constraints) {
           final count =
               (constraints.maxWidth / 160).floor().clamp(1, 6).toInt();
-          return GridView.builder(
+          final itemWidth =
+              (constraints.maxWidth - (count - 1) * 8) / count;
+          return SingleChildScrollView(
             padding: const EdgeInsets.all(8),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: count,
-              crossAxisSpacing: 8,
-              mainAxisSpacing: 8,
-              childAspectRatio: 0.9,
+            child: ReorderableWrap(
+              spacing: 8,
+              runSpacing: 8,
+              onReorder: _reorder,
+              buildDraggableFeedback: (context, constraints, child) => Material(
+                color: Colors.transparent,
+                child: child,
+              ),
+              children: [
+                for (final item in _items)
+                  SizedBox(
+                    key: ValueKey(item.id),
+                    width: itemWidth,
+                    child: AspectRatio(
+                      aspectRatio: 0.9,
+                      child: ItemCard(
+                        item: item,
+                        onEdit: () => _editItem(item),
+                        onOpenFolder: item.type == IptvItemType.folder
+                            ? () => _openFolder(item)
+                            : null,
+                        onOpenLink: item.type == IptvItemType.channel
+                            ? (link) => _openLink(link.url)
+                            : null,
+                      ),
+                    ),
+                  ),
+              ],
             ),
-            itemCount: _items.length,
-            itemBuilder: (context, index) {
-              final item = _items[index];
-              return ItemCard(
-                item: item,
-                onEdit: () => _editItem(item),
-                onOpenFolder: item.type == IptvItemType.folder
-                    ? () => _openFolder(item)
-                    : null,
-                onOpenLink: item.type == IptvItemType.channel
-                    ? (link) => _openLink(link.url)
-                    : null,
-              );
-            },
           );
         },
       ),
