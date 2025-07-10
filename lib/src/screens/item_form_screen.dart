@@ -326,7 +326,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                 if (widget.item != null)
                   ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
+                      backgroundColor: const Color.fromARGB(255, 241, 156, 150),
                       padding: const EdgeInsets.symmetric(
                         horizontal: 24,
                         vertical: 12,
