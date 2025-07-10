@@ -147,6 +147,8 @@ class _HomeScreenState extends State<HomeScreen> {
               spacing: 8,
               runSpacing: 8,
               onReorder: _reorder,
+              needsLongPressDraggable: false,
+              reorderAnimationDuration: const Duration(milliseconds: 250),
               buildDraggableFeedback: (context, constraints, child) => Material(
                 color: Colors.transparent,
                 child: child,
