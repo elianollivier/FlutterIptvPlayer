@@ -146,22 +146,25 @@ class _PlaylistFormScreenState extends State<PlaylistFormScreen> {
                   ),
                   const SizedBox(width: 8),
                   TextButton(
-                    onPressed: _path == null ||
-                            !_formKey.currentState!.validate()
+                    onPressed: _path == null
                         ? null
-                        : () => Navigator.pop(
-                              context,
-                              M3uPlaylist(
-                                id: widget.playlist?.id ?? const Uuid().v4(),
-                                name: _nameCtrl.text,
-                                path: _path!,
-                                logoPath: _logo,
-                                url: _urlCtrl.text.isNotEmpty
-                                    ? _urlCtrl.text
-                                    : null,
-                                lastDownload: _lastDownload,
-                              ),
-                            ),
+                        : () {
+                            if (_formKey.currentState?.validate() ?? false) {
+                              Navigator.pop(
+                                context,
+                                M3uPlaylist(
+                                  id: widget.playlist?.id ?? const Uuid().v4(),
+                                  name: _nameCtrl.text,
+                                  path: _path!,
+                                  logoPath: _logo,
+                                  url: _urlCtrl.text.isNotEmpty
+                                      ? _urlCtrl.text
+                                      : null,
+                                  lastDownload: _lastDownload,
+                                ),
+                              );
+                            }
+                          },
                     child: const Text('Save'),
                   ),
                 ],
