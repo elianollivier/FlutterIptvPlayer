@@ -7,6 +7,7 @@ import '../models/iptv_models.dart';
 import '../models/m3u_playlist.dart';
 import '../services/m3u_service.dart';
 import '../services/settings_service.dart';
+import '../services/download_service.dart';
 
 class PlaylistViewScreen extends StatefulWidget {
   const PlaylistViewScreen({super.key, required this.playlist});
@@ -54,6 +55,19 @@ class _PlaylistViewScreenState extends State<PlaylistViewScreen> {
     }
   }
 
+  bool _isDownloadable(ChannelLink link) {
+    final url = link.url.toLowerCase();
+    return url.endsWith('.mp4') || url.endsWith('.mkv');
+  }
+
+  Future<void> _downloadFile(ChannelLink link) async {
+    final uri = Uri.parse(link.url);
+    final name = uri.pathSegments.isNotEmpty
+        ? uri.pathSegments.last.split('?').first
+        : link.name;
+    await DownloadService.instance.download(link.url, name);
+  }
+
   @override
   void dispose() {
     _queryCtrl.dispose();
@@ -96,6 +110,16 @@ class _PlaylistViewScreenState extends State<PlaylistViewScreen> {
                               const Icon(Icons.image_not_supported),
                         )
                       : const Icon(Icons.image_not_supported),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (_isDownloadable(link))
+                        IconButton(
+                          icon: const Icon(Icons.download),
+                          onPressed: () => _downloadFile(link),
+                        ),
+                    ],
+                  ),
                   title: Text(link.name),
                   subtitle: Text(link.url),
                   onTap: () => _openLink(link.url),

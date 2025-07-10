@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'src/screens/home_screen.dart';
+import 'src/widgets/download_overlay.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const HomeScreen(),
+      home: const DownloadOverlay(child: HomeScreen()),
     );
   }
 }
