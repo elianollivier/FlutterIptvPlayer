@@ -211,11 +211,19 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
                       }),
                       child: Container(
                         width: double.infinity,
-                        color: i == _selectedIndex
-                            ? Colors.grey.shade600
-                            : _hoveredIndex == i
-                                ? Colors.grey.shade300
-                                : Colors.transparent,
+                        decoration: BoxDecoration(
+                          color: i == _selectedIndex
+                              ? Colors.grey.shade600
+                              : _hoveredIndex == i
+                                  ? Colors.grey.shade300
+                                  : Colors.transparent,
+                          borderRadius: BorderRadius.vertical(
+                            top: i == 0 ? const Radius.circular(12) : Radius.zero,
+                            bottom: i == widget.item.links.length - 1
+                                ? const Radius.circular(12)
+                                : Radius.zero,
+                          ),
+                        ),
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 6),
                         child: LinkLabel(
