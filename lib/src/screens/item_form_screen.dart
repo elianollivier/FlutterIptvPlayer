@@ -80,14 +80,14 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
     final result = await showDialog<ChannelLink>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Link'),
+        title: const Text('Lien'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             TextField(
               controller: nameCtrl,
-              decoration: const InputDecoration(labelText: 'Name'),
+              decoration: const InputDecoration(labelText: 'Nom'),
             ),
             const SizedBox(height: 12),
             TextField(
@@ -101,7 +101,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                   .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                   .toList(),
               decoration: InputDecoration(
-                labelText: 'Resolution',
+                labelText: 'Résolution',
                 filled: true,
                 fillColor: Theme.of(context).colorScheme.surfaceVariant,
                 border:
@@ -128,7 +128,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const Text('Annuler'),
           ),
           TextButton(
             onPressed: () {
@@ -163,7 +163,9 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
   Future<void> _importM3u() async {
     final playlist = await Navigator.push<M3uPlaylist>(
       context,
-      MaterialPageRoute(builder: (_) => const PlaylistListScreen()),
+      MaterialPageRoute(
+        builder: (_) => const PlaylistListScreen(selectMode: true),
+      ),
     );
     if (playlist == null) return;
     final imported = await Navigator.push<List<ChannelLink>>(
@@ -184,7 +186,8 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.item == null ? 'New item' : 'Edit item'),
+        title: Text(
+            widget.item == null ? 'Nouvel élément' : 'Modifier l\'élément'),
       ),
       body: Form(
         key: _formKey,
@@ -200,11 +203,11 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                       segments: const [
                         ButtonSegment(
                           value: IptvItemType.folder,
-                          label: Text('Folder'),
+                          label: Text('Dossier'),
                         ),
                         ButtonSegment(
                           value: IptvItemType.channel,
-                          label: Text('Channel'),
+                          label: Text('Chaîne'),
                         ),
                       ],
                       selected: <IptvItemType>{_type},
@@ -213,16 +216,16 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                     ),
                     TextFormField(
                       controller: _nameCtrl,
-                      decoration: const InputDecoration(labelText: 'Name'),
+                      decoration: const InputDecoration(labelText: 'Nom'),
                       validator: (v) =>
-                          v == null || v.isEmpty ? 'Required' : null,
+                          v == null || v.isEmpty ? 'Obligatoire' : null,
                     ),
                     const SizedBox(height: 8),
                     Row(
                       children: [
                         Expanded(
                           child: _logoPath == null
-                              ? const Text('No logo selected')
+                              ? const Text('Aucun logo s\u00e9lectionn\u00e9')
                               : Text(_logoPath!),
                         ),
                         IconButton(
@@ -245,7 +248,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Links'),
+                          const Text('Liens'),
                           Row(
                             children: [
                               IconButton(
@@ -336,7 +339,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                       Navigator.pop(context, {'delete': true});
                     },
                     icon: const Icon(Icons.delete),
-                    label: const Text('Delete'),
+                    label: const Text('Supprimer'),
                   ),
                 ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
@@ -351,7 +354,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                     }
                   },
                   icon: const Icon(Icons.save),
-                  label: const Text('Save'),
+                  label: const Text('Enregistrer'),
                 ),
               ],
             ),

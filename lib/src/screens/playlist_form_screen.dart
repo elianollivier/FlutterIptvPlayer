@@ -77,7 +77,7 @@ class _PlaylistFormScreenState extends State<PlaylistFormScreen> {
     final isEdit = widget.playlist != null;
     return Scaffold(
       appBar: AppBar(
-        title: Text(isEdit ? 'Edit Playlist' : 'New Playlist'),
+        title: Text(isEdit ? 'Modifier la playlist' : 'Nouvelle playlist'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -88,7 +88,7 @@ class _PlaylistFormScreenState extends State<PlaylistFormScreen> {
               TextFormField(
                 controller: _nameCtrl,
                 decoration: InputDecoration(
-                  labelText: 'Name',
+                  labelText: 'Nom',
                   filled: true,
                   fillColor: Theme.of(context).colorScheme.surfaceVariant,
                   border: OutlineInputBorder(
@@ -111,7 +111,7 @@ class _PlaylistFormScreenState extends State<PlaylistFormScreen> {
               ),
               const SizedBox(height: 12),
               ListTile(
-                title: Text(_logo ?? 'No logo selected'),
+                title: Text(_logo ?? 'Aucun logo sélectionné'),
                 trailing: IconButton(
                   icon: const Icon(Icons.folder_open),
                   onPressed: _pickLogo,
@@ -119,7 +119,7 @@ class _PlaylistFormScreenState extends State<PlaylistFormScreen> {
               ),
               const SizedBox(height: 12),
               ListTile(
-                title: Text(_path ?? 'No file selected'),
+                title: Text(_path ?? 'Aucun fichier sélectionné'),
                 trailing: Wrap(
                   spacing: 12,
                   children: [
@@ -138,7 +138,7 @@ class _PlaylistFormScreenState extends State<PlaylistFormScreen> {
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
                   child: Text(
-                    'Last download: '
+                    'Dernier téléchargement : '
                     '${DateFormat.yMd().add_Hm().format(_lastDownload!)}',
                   ),
                 ),
@@ -161,7 +161,7 @@ class _PlaylistFormScreenState extends State<PlaylistFormScreen> {
                         Navigator.pop(context, {'delete': true});
                       },
                       icon: const Icon(Icons.delete),
-                      label: const Text('Delete'),
+                      label: const Text('Supprimer'),
                     ),
                   Row(
                     mainAxisSize: MainAxisSize.min,
@@ -177,7 +177,7 @@ class _PlaylistFormScreenState extends State<PlaylistFormScreen> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        child: const Text('Cancel'),
+                        child: const Text('Annuler'),
                       ),
                       const SizedBox(width: 8),
                       ElevatedButton(
@@ -211,7 +211,7 @@ class _PlaylistFormScreenState extends State<PlaylistFormScreen> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        child: const Text('Save'),
+                        child: const Text('Enregistrer'),
                       ),
                     ],
                   ),

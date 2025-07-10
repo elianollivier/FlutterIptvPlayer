@@ -53,7 +53,8 @@ class _LogoPickerDialogState extends State<LogoPickerDialog> {
                   onPressed: () => Navigator.pop(context),
                 ),
                 const Expanded(
-                  child: Text('Select Logo', textAlign: TextAlign.center),
+                  child:
+                      Text('Sélectionner un logo', textAlign: TextAlign.center),
                 ),
               ],
             ),
