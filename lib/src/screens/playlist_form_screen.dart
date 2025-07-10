@@ -87,41 +87,52 @@ class _PlaylistFormScreenState extends State<PlaylistFormScreen> {
             children: [
               TextFormField(
                 controller: _nameCtrl,
-                decoration: const InputDecoration(labelText: 'Name'),
+                decoration: InputDecoration(
+                  labelText: 'Name',
+                  filled: true,
+                  fillColor: Theme.of(context).colorScheme.surfaceVariant,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
                 validator: (v) => v == null || v.isEmpty ? 'Required' : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _urlCtrl,
-                decoration: const InputDecoration(labelText: 'URL'),
+                decoration: InputDecoration(
+                  labelText: 'URL',
+                  filled: true,
+                  fillColor: Theme.of(context).colorScheme.surfaceVariant,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
               ),
               const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: _logo == null ? const Text('No logo') : Text(_logo!),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.folder_open),
-                    onPressed: _pickLogo,
-                  ),
-                ],
+              ListTile(
+                title: Text(_logo ?? 'No logo selected'),
+                trailing: IconButton(
+                  icon: const Icon(Icons.folder_open),
+                  onPressed: _pickLogo,
+                ),
               ),
               const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: _path == null ? const Text('No file') : Text(_path!),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.upload_file),
-                    onPressed: _importFile,
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.download),
-                    onPressed: _download,
-                  ),
-                ],
+              ListTile(
+                title: Text(_path ?? 'No file selected'),
+                trailing: Wrap(
+                  spacing: 12,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.upload_file),
+                      onPressed: _importFile,
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.download),
+                      onPressed: _download,
+                    ),
+                  ],
+                ),
               ),
               if (_lastDownload != null)
                 Padding(
@@ -138,34 +149,53 @@ class _PlaylistFormScreenState extends State<PlaylistFormScreen> {
                 ),
               const SizedBox(height: 16),
               Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text('Cancel'),
-                  ),
-                  const SizedBox(width: 8),
-                  TextButton(
-                    onPressed: _path == null
-                        ? null
-                        : () {
-                            if (_formKey.currentState?.validate() ?? false) {
-                              Navigator.pop(
-                                context,
-                                M3uPlaylist(
-                                  id: widget.playlist?.id ?? const Uuid().v4(),
-                                  name: _nameCtrl.text,
-                                  path: _path!,
-                                  logoPath: _logo,
-                                  url: _urlCtrl.text.isNotEmpty
-                                      ? _urlCtrl.text
-                                      : null,
-                                  lastDownload: _lastDownload,
-                                ),
-                              );
-                            }
-                          },
-                    child: const Text('Save'),
+                  if (isEdit)
+                    ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            const Color.fromARGB(255, 241, 156, 150),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context, {'delete': true});
+                      },
+                      icon: const Icon(Icons.delete),
+                      label: const Text('Delete'),
+                    ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('Cancel'),
+                      ),
+                      const SizedBox(width: 8),
+                      TextButton(
+                        onPressed: _path == null
+                            ? null
+                            : () {
+                                if (_formKey.currentState?.validate() ??
+                                    false) {
+                                  Navigator.pop(
+                                    context,
+                                    M3uPlaylist(
+                                      id: widget.playlist?.id ??
+                                          const Uuid().v4(),
+                                      name: _nameCtrl.text,
+                                      path: _path!,
+                                      logoPath: _logo,
+                                      url: _urlCtrl.text.isNotEmpty
+                                          ? _urlCtrl.text
+                                          : null,
+                                      lastDownload: _lastDownload,
+                                    ),
+                                  );
+                                }
+                              },
+                        child: const Text('Save'),
+                      ),
+                    ],
                   ),
                 ],
               ),

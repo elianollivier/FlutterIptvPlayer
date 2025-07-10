@@ -42,15 +42,19 @@ class _PlaylistListScreenState extends State<PlaylistListScreen> {
   }
 
   Future<void> _editPlaylist(M3uPlaylist playlist) async {
-    final result = await Navigator.push<M3uPlaylist>(
+    final result = await Navigator.push<dynamic>(
       context,
       MaterialPageRoute(builder: (_) => PlaylistFormScreen(playlist: playlist)),
     );
-    if (result == null) return;
-    final index = _playlists.indexWhere((e) => e.id == result.id);
-    if (index >= 0) {
-      setState(() => _playlists[index] = result);
-      await _service.save(_playlists);
+    if (result is Map && result['delete'] == true) {
+      await _service.delete(playlist);
+      await _load();
+    } else if (result is M3uPlaylist) {
+      final index = _playlists.indexWhere((e) => e.id == result.id);
+      if (index >= 0) {
+        setState(() => _playlists[index] = result);
+        await _service.save(_playlists);
+      }
     }
   }
 
