@@ -35,16 +35,9 @@ class DownloadService {
   Future<void> _start(DownloadTask task) async {
     final client = http.Client();
     try {
-      final request = http.Request('GET', Uri.parse(task.url));
-      request.headers['User-Agent'] =
-          'Mozilla/5.0 (compatible; FlutterIptvPlayer)';
-      final response = await client.send(request);
-      if (response.statusCode != HttpStatus.ok) {
-        throw http.ClientException(
-          'HTTP ${response.statusCode}',
-          Uri.parse(task.url),
-        );
-      }
+      final response = await client.send(
+        http.Request('GET', Uri.parse(task.url)),
+      );
       task.total = response.contentLength ?? 0;
       final sink = task.file.openWrite();
       await for (final chunk in response.stream) {
