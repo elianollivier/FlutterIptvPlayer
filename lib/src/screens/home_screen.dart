@@ -179,7 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         onOpenFolder: item.type == IptvItemType.folder
                             ? () => _openFolder(item)
                             : null,
-                        onOpenLink: item.type == IptvItemType.channel
+                        onOpenLink: item.type == IptvItemType.media
                             ? (link) => _openLink(link.url)
                             : null,
                       ),

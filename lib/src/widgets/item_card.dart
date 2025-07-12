@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'link_label.dart';
 import '../models/iptv_models.dart';
+import '../services/download_service.dart';
 
 class ItemCard extends StatefulWidget {
   const ItemCard({
@@ -39,9 +40,22 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
   }
 
   void _toggleExpanded() {
-    if (widget.item.type == IptvItemType.channel) {
+    if (widget.item.type == IptvItemType.media) {
       setState(() => _expanded = !_expanded);
     }
+  }
+
+  bool _isDownloadable(ChannelLink link) {
+    final url = link.url.toLowerCase();
+    return url.endsWith('.mp4') || url.endsWith('.mkv');
+  }
+
+  Future<void> _downloadFile(ChannelLink link) async {
+    final uri = Uri.parse(link.url);
+    final name = uri.pathSegments.isNotEmpty
+        ? uri.pathSegments.last.split('?').first
+        : link.name;
+    await DownloadService.instance.download(link.url, name);
   }
 
   @override
@@ -181,7 +195,7 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
 
     final linksList = AnimatedSize(
       duration: const Duration(milliseconds: 200),
-      child: _expanded && widget.item.type == IptvItemType.channel
+      child: _expanded && widget.item.type == IptvItemType.media
           ? Container(
               margin: const EdgeInsets.only(top: 4),
               decoration: BoxDecoration(
@@ -197,14 +211,16 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
                   ),
                 ],
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  for (int i = 0; i < widget.item.links.length; i++)
-                    InkWell(
-                      onHover: (hover) => setState(
-                        () => _hoveredIndex = hover ? i : null,
-                      ),
+              constraints: const BoxConstraints(maxHeight: 200),
+              child: Scrollbar(
+                thumbVisibility: true,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: widget.item.links.length,
+                  itemBuilder: (context, i) {
+                    final link = widget.item.links[i];
+                    return InkWell(
+                      onHover: (hover) => setState(() => _hoveredIndex = hover ? i : null),
                       onTap: () => setState(() {
                         _selectedIndex = i;
                         _expanded = false;
@@ -224,15 +240,28 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
                                 : Radius.zero,
                           ),
                         ),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 6),
-                        child: LinkLabel(
-                          link: widget.item.links[i],
-                          dark: i == _selectedIndex,
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: LinkLabel(
+                                link: link,
+                                dark: i == _selectedIndex,
+                              ),
+                            ),
+                            if (_isDownloadable(link))
+                              IconButton(
+                                icon: const Icon(Icons.download),
+                                padding: EdgeInsets.zero,
+                                color: i == _selectedIndex ? Colors.white : null,
+                                onPressed: () => _downloadFile(link),
+                              ),
+                          ],
                         ),
                       ),
-                    ),
-                ],
+                    );
+                  },
+                ),
               ),
             )
           : const SizedBox.shrink(),

@@ -206,8 +206,8 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                           label: Text('Dossier'),
                         ),
                         ButtonSegment(
-                          value: IptvItemType.channel,
-                          label: Text('Chaîne'),
+                          value: IptvItemType.media,
+                          label: Text('Média'),
                         ),
                       ],
                       selected: <IptvItemType>{_type},
@@ -238,7 +238,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                 ),
               ),
             ),
-            if (_type == IptvItemType.channel)
+            if (_type == IptvItemType.media)
               Card(
                 margin: const EdgeInsets.only(top: 16),
                 child: Padding(
