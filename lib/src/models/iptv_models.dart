@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-enum IptvItemType { folder, channel }
+enum IptvItemType { folder, media }
 
 class ChannelLink {
   final String name;

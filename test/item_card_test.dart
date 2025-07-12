@@ -8,7 +8,7 @@ import 'package:flutter_iptv_player/src/widgets/item_card.dart';
 void main() {
   final item = IptvItem(
     id: '1',
-    type: IptvItemType.channel,
+    type: IptvItemType.media,
     name: 'Item',
     links: [
       ChannelLink(
