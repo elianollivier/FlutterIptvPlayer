@@ -3,10 +3,17 @@ import 'package:flutter/material.dart';
 import '../models/download_task.dart';
 import '../services/download_service.dart';
 
-class DownloadOverlay extends StatelessWidget {
+class DownloadOverlay extends StatefulWidget {
   const DownloadOverlay({super.key, required this.child});
 
   final Widget child;
+
+  @override
+  State<DownloadOverlay> createState() => _DownloadOverlayState();
+}
+
+class _DownloadOverlayState extends State<DownloadOverlay> {
+  bool _expanded = false;
 
   String _format(Duration d) {
     final minutes = d.inMinutes;
@@ -17,12 +24,17 @@ class DownloadOverlay extends StatelessWidget {
     return '${d.inSeconds}s';
   }
 
+  String _formatBytes(int bytes) {
+    final mb = bytes / (1024 * 1024);
+    return '${mb.toStringAsFixed(1)} MB';
+  }
+
   @override
   Widget build(BuildContext context) {
     final service = DownloadService.instance;
     return Stack(
       children: [
-        child,
+        widget.child,
         ValueListenableBuilder<List<DownloadTask>>(
           valueListenable: service.tasks,
           builder: (context, tasks, _) {
@@ -30,50 +42,98 @@ class DownloadOverlay extends StatelessWidget {
                 .where((t) => t.status == DownloadStatus.downloading)
                 .toList();
             if (active.isEmpty) return const SizedBox.shrink();
-            return Positioned(
-              right: 16,
-              bottom: 16,
-              child: Material(
-                elevation: 4,
-                borderRadius: BorderRadius.circular(8),
-                color: Theme.of(context).colorScheme.surface,
-                child: Container(
-                  width: 220,
-                  padding: const EdgeInsets.all(8),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      for (final task in active)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(task.name,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis),
-                                    if (task.remaining != null)
+            if (_expanded) {
+              return Positioned(
+                right: 16,
+                bottom: 16,
+                child: Material(
+                  elevation: 4,
+                  borderRadius: BorderRadius.circular(8),
+                  color: Theme.of(context).colorScheme.surface,
+                  child: Container(
+                    width: 240,
+                    padding: const EdgeInsets.all(8),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text('Téléchargements'),
+                            IconButton(
+                              icon: const Icon(Icons.expand_less),
+                              onPressed: () =>
+                                  setState(() => _expanded = false),
+                            ),
+                          ],
+                        ),
+                        for (final task in active)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(task.name,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis),
                                       Text(
-                                        'Reste ${_format(task.remaining!)}',
+                                        '${_formatBytes(task.received)} / ${_formatBytes(task.total)}',
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodySmall,
                                       ),
-                                    LinearProgressIndicator(value: task.progress),
-                                  ],
+                                      if (task.remaining != null)
+                                        Text(
+                                          'Reste ${_format(task.remaining!)}',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall,
+                                        ),
+                                      LinearProgressIndicator(
+                                          value: task.progress),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.close),
-                                onPressed: () => service.cancel(task),
-                              ),
-                            ],
+                                IconButton(
+                                  icon: const Icon(Icons.close),
+                                  onPressed: () => service.cancel(task),
+                                ),
+                              ],
+                            ),
                           ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }
+            final task = active.first;
+            return Positioned(
+              top: 16,
+              right: 16,
+              child: GestureDetector(
+                onTap: () => setState(() => _expanded = true),
+                child: Material(
+                  elevation: 4,
+                  shape: const CircleBorder(),
+                  color: Theme.of(context).colorScheme.surface,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.download),
+                        Text(
+                          '${_formatBytes(task.received)} /\n${_formatBytes(task.total)}',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.bodySmall,
                         ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
