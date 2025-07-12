@@ -18,7 +18,10 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const DownloadOverlay(child: HomeScreen()),
+      builder: (context, child) => DownloadOverlay(
+        child: child ?? const SizedBox.shrink(),
+      ),
+      home: const HomeScreen(),
     );
   }
 }
