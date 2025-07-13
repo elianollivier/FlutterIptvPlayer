@@ -28,8 +28,10 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
   late IptvItemType _type;
   late TextEditingController _nameCtrl;
   String? _logoPath;
+  String? _logoUrl;
   List<ChannelLink> _links = [];
   M3uSeries? _series;
+  bool _viewed = false;
 
   bool _isDownloadable(ChannelLink link) {
     final url = link.url.toLowerCase();
@@ -50,7 +52,9 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
     _type = widget.item?.type ?? IptvItemType.folder;
     _nameCtrl = TextEditingController(text: widget.item?.name ?? '');
     _logoPath = widget.item?.logoPath;
+    _logoUrl = widget.item?.logoUrl;
     _links = List.of(widget.item?.links ?? []);
+    _viewed = widget.item?.viewed ?? false;
   }
 
   IptvItem _buildItem() {
@@ -59,8 +63,10 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
       type: _type,
       name: _nameCtrl.text,
       logoPath: _logoPath,
+      logoUrl: _logoUrl,
       links: _links,
       parentId: widget.parentId ?? widget.item?.parentId,
+      viewed: _viewed,
     );
   }
 
@@ -77,6 +83,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
         id: seasonId,
         type: IptvItemType.folder,
         name: 'Saison $season',
+        logoUrl: _series!.logo,
         parentId: parentId,
       ));
       for (final ep in bySeason[season]!) {
@@ -84,6 +91,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
           id: const Uuid().v4(),
           type: IptvItemType.media,
           name: ep.name,
+          logoUrl: ep.logo,
           links: [
             ChannelLink(
               name: ep.name,
@@ -95,6 +103,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
             ),
           ],
           parentId: seasonId,
+          viewed: false,
         ));
       }
     }
@@ -107,7 +116,10 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
       builder: (_) => const LogoPickerDialog(),
     );
     if (result != null) {
-      setState(() => _logoPath = result);
+      setState(() {
+        _logoPath = result;
+        _logoUrl = null;
+      });
     }
   }
 
@@ -232,7 +244,16 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
       ),
     );
     if (imported != null && imported.isNotEmpty) {
-      setState(() => _links.addAll(imported));
+      setState(() {
+        _links.addAll(imported);
+        if (_logoPath == null && _logoUrl == null) {
+          final firstLogo = imported.firstWhere(
+            (e) => e.logo.isNotEmpty,
+            orElse: () => imported.first,
+          );
+          if (firstLogo.logo.isNotEmpty) _logoUrl = firstLogo.logo;
+        }
+      });
     }
   }
 
@@ -254,6 +275,9 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
       setState(() {
         _series = serie;
         if (_nameCtrl.text.isEmpty) _nameCtrl.text = serie.name;
+        if (_logoPath == null && _logoUrl == null && serie.logo.isNotEmpty) {
+          _logoUrl = serie.logo;
+        }
       });
     }
   }
@@ -351,6 +375,12 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                             ],
                           ),
                         ],
+                      ),
+                      CheckboxListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: const Text('Vu'),
+                        value: _viewed,
+                        onChanged: (v) => setState(() => _viewed = v ?? false),
                       ),
                       ReorderableListView.builder(
                         shrinkWrap: true,

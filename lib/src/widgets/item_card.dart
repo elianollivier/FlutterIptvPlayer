@@ -87,12 +87,23 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
                       File(widget.item.logoPath!),
                       fit: BoxFit.contain,
                     )
-                  : Icon(
-                      widget.item.type == IptvItemType.folder
-                          ? Icons.folder
-                          : Icons.tv,
-                      size: 48,
-                    ),
+                  : widget.item.logoUrl != null
+                      ? Image.network(
+                          widget.item.logoUrl!,
+                          fit: BoxFit.contain,
+                          errorBuilder: (_, __, ___) => Icon(
+                            widget.item.type == IptvItemType.folder
+                                ? Icons.folder
+                                : Icons.tv,
+                            size: 48,
+                          ),
+                        )
+                      : Icon(
+                          widget.item.type == IptvItemType.folder
+                              ? Icons.folder
+                              : Icons.tv,
+                          size: 48,
+                        ),
             ),
             if (widget.item.type == IptvItemType.folder)
               Positioned(
@@ -172,6 +183,12 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
                       onPressed: widget.onEdit,
                     ),
                   ),
+                ),
+              ),
+            if (widget.item.viewed && widget.item.type == IptvItemType.media)
+              Positioned.fill(
+                child: Container(
+                  color: Colors.black.withOpacity(0.4),
                 ),
               ),
             previewWidget,
