@@ -87,7 +87,7 @@ class _PlaylistListScreenState extends State<PlaylistListScreen> {
                 final itemWidth =
                     ((constraints.maxWidth - (count - 1) * 8)-12) / count;
                 return GridView.builder(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(5),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: count,
                     crossAxisSpacing: 8,
