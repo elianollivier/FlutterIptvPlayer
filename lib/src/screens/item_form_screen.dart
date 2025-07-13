@@ -5,11 +5,13 @@ import 'package:uuid/uuid.dart';
 import 'm3u_import_screen.dart';
 import 'playlist_list_screen.dart';
 import '../models/m3u_playlist.dart';
+import 'series_list_screen.dart';
 
 import '../widgets/link_label.dart';
 import '../widgets/logo_picker_dialog.dart';
 import '../models/iptv_models.dart';
 import '../services/download_service.dart';
+import '../models/m3u_series.dart';
 
 class ItemFormScreen extends StatefulWidget {
   const ItemFormScreen({super.key, this.item, this.parentId});
@@ -27,6 +29,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
   late TextEditingController _nameCtrl;
   String? _logoPath;
   List<ChannelLink> _links = [];
+  M3uSeries? _series;
 
   bool _isDownloadable(ChannelLink link) {
     final url = link.url.toLowerCase();
@@ -59,6 +62,43 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
       links: _links,
       parentId: widget.parentId ?? widget.item?.parentId,
     );
+  }
+
+  List<IptvItem> _buildSeriesItems(String parentId) {
+    if (_series == null) return [];
+    final List<IptvItem> items = [];
+    final Map<int, List<M3uEpisode>> bySeason = {};
+    for (final ep in _series!.episodes) {
+      bySeason.putIfAbsent(ep.season, () => []).add(ep);
+    }
+    for (final season in bySeason.keys) {
+      final seasonId = const Uuid().v4();
+      items.add(IptvItem(
+        id: seasonId,
+        type: IptvItemType.folder,
+        name: 'Saison $season',
+        parentId: parentId,
+      ));
+      for (final ep in bySeason[season]!) {
+        items.add(IptvItem(
+          id: const Uuid().v4(),
+          type: IptvItemType.media,
+          name: ep.name,
+          links: [
+            ChannelLink(
+              name: ep.name,
+              url: ep.url,
+              logo: ep.logo,
+              resolution: '',
+              fps: '',
+              notes: '',
+            ),
+          ],
+          parentId: seasonId,
+        ));
+      }
+    }
+    return items;
   }
 
   Future<void> _pickLogo() async {
@@ -196,6 +236,28 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
     }
   }
 
+  Future<void> _importSeries() async {
+    final playlist = await Navigator.push<M3uPlaylist>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const PlaylistListScreen(selectMode: true),
+      ),
+    );
+    if (playlist == null) return;
+    final serie = await Navigator.push<M3uSeries>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => SeriesListScreen(path: playlist.path),
+      ),
+    );
+    if (serie != null) {
+      setState(() {
+        _series = serie;
+        if (_nameCtrl.text.isEmpty) _nameCtrl.text = serie.name;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -248,6 +310,19 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                         ),
                       ],
                     ),
+                    if (_type == IptvItemType.folder)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 12),
+                        child: ElevatedButton.icon(
+                          onPressed: _importSeries,
+                          icon: const Icon(Icons.playlist_play),
+                          label: Text(
+                            _series == null
+                                ? 'Importer une série'
+                                : 'Série : ${_series!.name}',
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -369,7 +444,16 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                   ),
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      Navigator.pop(context, _buildItem());
+                      final item = _buildItem();
+                      if (_series != null) {
+                        final children = _buildSeriesItems(item.id);
+                        Navigator.pop(context, {
+                          'item': item,
+                          'children': children,
+                        });
+                      } else {
+                        Navigator.pop(context, item);
+                      }
                     }
                   },
                   icon: const Icon(Icons.save),
