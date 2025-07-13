@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 
 import 'link_label.dart';
 import '../models/iptv_models.dart';
-import '../services/download_service.dart';
 
 class ItemCard extends StatefulWidget {
   const ItemCard({
@@ -45,18 +44,6 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
     }
   }
 
-  bool _isDownloadable(ChannelLink link) {
-    final url = link.url.toLowerCase();
-    return url.endsWith('.mp4') || url.endsWith('.mkv');
-  }
-
-  Future<void> _downloadFile(ChannelLink link) async {
-    final uri = Uri.parse(link.url);
-    final name = uri.pathSegments.isNotEmpty
-        ? uri.pathSegments.last.split('?').first
-        : link.name;
-    await DownloadService.instance.download(link.url, name);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -249,13 +236,6 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
                                 dark: i == _selectedIndex,
                               ),
                             ),
-                            if (_isDownloadable(link))
-                              IconButton(
-                                icon: const Icon(Icons.download),
-                                padding: EdgeInsets.zero,
-                                color: i == _selectedIndex ? Colors.white : null,
-                                onPressed: () => _downloadFile(link),
-                              ),
                           ],
                         ),
                       ),
@@ -275,8 +255,13 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
           return Column(
             mainAxisSize: MainAxisSize.max,
             children: [
-              Expanded(child: InkWell(onTap: _open, child: card)),
-              linksList,
+              Expanded(
+                child: InkWell(
+                  onTap: _open,
+                  child: AspectRatio(aspectRatio: 0.9, child: card),
+                ),
+              ),
+              Flexible(child: linksList),
             ],
           );
         },

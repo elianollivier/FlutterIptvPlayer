@@ -151,8 +151,11 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
-          final count =
+          final maxColumns =
               (constraints.maxWidth / 160).floor().clamp(1, 6).toInt();
+          final count = _items.isEmpty
+              ? 1
+              : (_items.length < maxColumns ? _items.length : maxColumns);
           final itemWidth = (constraints.maxWidth - (count - 1) * 8) / count;
           return SingleChildScrollView(
             padding: const EdgeInsets.all(8),
@@ -171,18 +174,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   SizedBox(
                     key: ValueKey(item.id),
                     width: itemWidth,
-                    child: AspectRatio(
-                      aspectRatio: 0.9,
-                      child: ItemCard(
-                        item: item,
-                        onEdit: () => _editItem(item),
-                        onOpenFolder: item.type == IptvItemType.folder
-                            ? () => _openFolder(item)
-                            : null,
-                        onOpenLink: item.type == IptvItemType.media
-                            ? (link) => _openLink(link.url)
-                            : null,
-                      ),
+                    child: ItemCard(
+                      item: item,
+                      onEdit: () => _editItem(item),
+                      onOpenFolder: item.type == IptvItemType.folder
+                          ? () => _openFolder(item)
+                          : null,
+                      onOpenLink: item.type == IptvItemType.media
+                          ? (link) => _openLink(link.url)
+                          : null,
                     ),
                   ),
               ],

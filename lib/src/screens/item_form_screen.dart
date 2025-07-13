@@ -9,6 +9,7 @@ import '../models/m3u_playlist.dart';
 import '../widgets/link_label.dart';
 import '../widgets/logo_picker_dialog.dart';
 import '../models/iptv_models.dart';
+import '../services/download_service.dart';
 
 class ItemFormScreen extends StatefulWidget {
   const ItemFormScreen({super.key, this.item, this.parentId});
@@ -26,6 +27,19 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
   late TextEditingController _nameCtrl;
   String? _logoPath;
   List<ChannelLink> _links = [];
+
+  bool _isDownloadable(ChannelLink link) {
+    final url = link.url.toLowerCase();
+    return url.endsWith('.mp4') || url.endsWith('.mkv');
+  }
+
+  Future<void> _downloadFile(ChannelLink link) async {
+    final uri = Uri.parse(link.url);
+    final name = uri.pathSegments.isNotEmpty
+        ? uri.pathSegments.last.split('?').first
+        : link.name;
+    await DownloadService.instance.download(link.url, name);
+  }
 
   @override
   void initState() {
@@ -299,6 +313,11 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
+                                  if (_isDownloadable(link))
+                                    IconButton(
+                                      icon: const Icon(Icons.download),
+                                      onPressed: () => _downloadFile(link),
+                                    ),
                                   IconButton(
                                     icon: const Icon(Icons.edit),
                                     onPressed: () =>
