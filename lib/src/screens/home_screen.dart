@@ -26,6 +26,15 @@ class _HomeScreenState extends State<HomeScreen> {
   final Logger _logger = Logger();
   List<IptvItem> _allItems = [];
 
+  bool _isViewableMedia(IptvItem item) {
+    if (item.type != IptvItemType.media) return false;
+    if (item.links.isEmpty) return false;
+    return item.links.every((l) {
+      final url = l.url.toLowerCase();
+      return url.endsWith('.mp4') || url.endsWith('.mkv');
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -117,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       await Process.start(exePath, [link.url], runInShell: true);
       final index = _allItems.indexWhere((e) => e.id == item.id);
-      if (index >= 0 && !_allItems[index].viewed) {
+      if (_isViewableMedia(item) && index >= 0 && !_allItems[index].viewed) {
         setState(() {
           _allItems[index] = IptvItem(
             id: item.id,

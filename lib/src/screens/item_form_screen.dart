@@ -33,6 +33,17 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
   M3uSeries? _series;
   bool _viewed = false;
 
+  bool _onlyFileLinks(List<ChannelLink> links) {
+    if (links.isEmpty) return false;
+    return links.every((l) {
+      final url = l.url.toLowerCase();
+      return url.endsWith('.mp4') || url.endsWith('.mkv');
+    });
+  }
+
+  bool get _canBeViewed =>
+      _type == IptvItemType.media && _onlyFileLinks(_links);
+
   bool _isDownloadable(ChannelLink link) {
     final url = link.url.toLowerCase();
     return url.endsWith('.mp4') || url.endsWith('.mkv');
@@ -66,7 +77,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
       logoUrl: _logoUrl,
       links: _links,
       parentId: widget.parentId ?? widget.item?.parentId,
-      viewed: _viewed,
+      viewed: _canBeViewed ? _viewed : false,
     );
   }
 
@@ -222,6 +233,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
         } else {
           _links[index] = result;
         }
+        if (!_canBeViewed) _viewed = false;
       });
     }
   }
@@ -253,6 +265,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
           );
           if (firstLogo.logo.isNotEmpty) _logoUrl = firstLogo.logo;
         }
+        if (!_canBeViewed) _viewed = false;
       });
     }
   }
@@ -376,12 +389,6 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                           ),
                         ],
                       ),
-                      CheckboxListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: const Text('Vu'),
-                        value: _viewed,
-                        onChanged: (v) => setState(() => _viewed = v ?? false),
-                      ),
                       ReorderableListView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
@@ -392,6 +399,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                             if (newIndex > oldIndex) newIndex -= 1;
                             final item = _links.removeAt(oldIndex);
                             _links.insert(newIndex, item);
+                            if (!_canBeViewed) _viewed = false;
                           });
                         },
                         itemBuilder: (context, index) {
@@ -433,6 +441,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                                     onPressed: () {
                                       setState(() {
                                         _links.removeAt(index);
+                                        if (!_canBeViewed) _viewed = false;
                                       });
                                     },
                                   ),
@@ -444,6 +453,16 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                       ),
                     ],
                   ),
+                ),
+              ),
+            if (_canBeViewed)
+              Card(
+                margin: const EdgeInsets.only(top: 16),
+                child: SwitchListTile.adaptive(
+                  title: const Text('Marquer comme vu'),
+                  value: _viewed,
+                  onChanged: (v) => setState(() => _viewed = v),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                 ),
               ),
             const SizedBox(height: 16),

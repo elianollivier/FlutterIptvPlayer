@@ -29,6 +29,17 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
   int _selectedIndex = 0;
   int? _hoveredIndex;
 
+  bool get _shouldShowViewed {
+    if (!widget.item.viewed || widget.item.type != IptvItemType.media) {
+      return false;
+    }
+    final files = widget.item.links.every((l) {
+      final url = l.url.toLowerCase();
+      return url.endsWith('.mp4') || url.endsWith('.mkv');
+    });
+    return files;
+  }
+
   void _open() {
     if (widget.item.type == IptvItemType.folder) {
       widget.onOpenFolder?.call();
@@ -43,7 +54,6 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
       setState(() => _expanded = !_expanded);
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -185,10 +195,12 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
                   ),
                 ),
               ),
-            if (widget.item.viewed && widget.item.type == IptvItemType.media)
+            if (_shouldShowViewed)
               Positioned.fill(
-                child: Container(
-                  color: Colors.black.withOpacity(0.4),
+                child: IgnorePointer(
+                  child: Container(
+                    color: Colors.black.withOpacity(0.4),
+                  ),
                 ),
               ),
             previewWidget,
@@ -224,7 +236,8 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
                   itemBuilder: (context, i) {
                     final link = widget.item.links[i];
                     return InkWell(
-                      onHover: (hover) => setState(() => _hoveredIndex = hover ? i : null),
+                      onHover: (hover) =>
+                          setState(() => _hoveredIndex = hover ? i : null),
                       onTap: () => setState(() {
                         _selectedIndex = i;
                         _expanded = false;
@@ -238,13 +251,16 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
                                   ? Colors.grey.shade300
                                   : Colors.transparent,
                           borderRadius: BorderRadius.vertical(
-                            top: i == 0 ? const Radius.circular(12) : Radius.zero,
+                            top: i == 0
+                                ? const Radius.circular(12)
+                                : Radius.zero,
                             bottom: i == widget.item.links.length - 1
                                 ? const Radius.circular(12)
                                 : Radius.zero,
                           ),
                         ),
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 6),
                         child: Row(
                           children: [
                             Expanded(
