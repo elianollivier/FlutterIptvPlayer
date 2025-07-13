@@ -43,16 +43,26 @@ class _HomeScreenState extends State<HomeScreen> {
       _allItems.where((e) => e.parentId == widget.parentId).toList();
 
   Future<void> _addItem() async {
-    final result = await Navigator.push<IptvItem>(
+    final result = await Navigator.push<dynamic>(
       context,
       MaterialPageRoute(
         builder: (c) => ItemFormScreen(parentId: widget.parentId),
       ),
     );
     if (result != null) {
-      setState(() {
-        _allItems.add(result);
-      });
+      if (result is Map) {
+        final item = result['item'] as IptvItem;
+        final List<IptvItem> children =
+            (result['children'] as List<IptvItem>? ?? []);
+        setState(() {
+          _allItems.add(item);
+          _allItems.addAll(children);
+        });
+      } else if (result is IptvItem) {
+        setState(() {
+          _allItems.add(result);
+        });
+      }
       await _storage.saveItems(_allItems);
     }
   }
@@ -67,6 +77,18 @@ class _HomeScreenState extends State<HomeScreen> {
     if (result is Map && result['delete'] == true) {
       setState(() {
         _allItems.removeWhere((e) => e.id == item.id);
+      });
+      await _storage.saveItems(_allItems);
+    } else if (result is Map) {
+      final IptvItem updated = result['item'] as IptvItem;
+      final List<IptvItem> children =
+          (result['children'] as List<IptvItem>? ?? []);
+      final index = _allItems.indexWhere((e) => e.id == updated.id);
+      setState(() {
+        if (index >= 0) {
+          _allItems[index] = updated;
+        }
+        _allItems.addAll(children);
       });
       await _storage.saveItems(_allItems);
     } else if (result is IptvItem) {
@@ -153,7 +175,8 @@ class _HomeScreenState extends State<HomeScreen> {
         builder: (context, constraints) {
           final count =
               (constraints.maxWidth / 160).round().clamp(1, 6).toInt();
-          final itemWidth = ((constraints.maxWidth - (count - 1) * 8)-12) / count;
+          final itemWidth =
+              ((constraints.maxWidth - (count - 1) * 8) - 12) / count;
           return SingleChildScrollView(
             padding: const EdgeInsets.all(5),
             child: ReorderableWrap(
