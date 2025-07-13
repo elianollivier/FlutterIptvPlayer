@@ -50,16 +50,20 @@ class IptvItem {
   final IptvItemType type;
   final String name;
   final String? logoPath;
+  final String? logoUrl;
   final List<ChannelLink> links;
   final String? parentId;
+  final bool viewed;
 
   IptvItem({
     required this.id,
     required this.type,
     required this.name,
     this.logoPath,
+    this.logoUrl,
     this.links = const [],
     this.parentId,
+    this.viewed = false,
   });
 
   factory IptvItem.fromJson(Map<String, dynamic> json) => IptvItem(
@@ -67,10 +71,12 @@ class IptvItem {
         type: IptvItemType.values[json['type'] as int],
         name: json['name'] as String,
         logoPath: json['logoPath'] as String?,
+        logoUrl: json['logoUrl'] as String?,
         links: (json['links'] as List<dynamic>? ?? [])
             .map((e) => ChannelLink.fromJson(e as Map<String, dynamic>))
             .toList(),
         parentId: json['parentId'] as String?,
+        viewed: json['viewed'] as bool? ?? false,
       );
 
   Map<String, dynamic> toJson() => {
@@ -78,8 +84,10 @@ class IptvItem {
         'type': type.index,
         'name': name,
         'logoPath': logoPath,
+        'logoUrl': logoUrl,
         'links': links.map((e) => e.toJson()).toList(),
         'parentId': parentId,
+        'viewed': viewed,
       };
 
   @override

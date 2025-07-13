@@ -112,10 +112,26 @@ class _HomeScreenState extends State<HomeScreen> {
     await _load();
   }
 
-  Future<void> _openLink(String url) async {
+  Future<void> _playMedia(IptvItem item, ChannelLink link) async {
     final exePath = await SettingsService().getVlcPath();
     try {
-      await Process.start(exePath, [url], runInShell: true);
+      await Process.start(exePath, [link.url], runInShell: true);
+      final index = _allItems.indexWhere((e) => e.id == item.id);
+      if (index >= 0 && !_allItems[index].viewed) {
+        setState(() {
+          _allItems[index] = IptvItem(
+            id: item.id,
+            type: item.type,
+            name: item.name,
+            logoPath: item.logoPath,
+            logoUrl: item.logoUrl,
+            links: item.links,
+            parentId: item.parentId,
+            viewed: true,
+          );
+        });
+        await _storage.saveItems(_allItems);
+      }
     } catch (e) {
       _logger.e('Could not open VLC', error: e);
     }
@@ -201,7 +217,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ? () => _openFolder(item)
                           : null,
                       onOpenLink: item.type == IptvItemType.media
-                          ? (link) => _openLink(link.url)
+                          ? (link) => _playMedia(item, link)
                           : null,
                     ),
                   ),
