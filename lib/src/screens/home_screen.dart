@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'dart:math';
 import 'package:logger/logger.dart';
 
 import '../models/iptv_models.dart';
@@ -152,7 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: LayoutBuilder(
         builder: (context, constraints) {
           final count =
-              (constraints.maxWidth / 160).round().clamp(1, 6).toInt();
+              max(1, (constraints.maxWidth / 160).floor());
           final itemWidth = (constraints.maxWidth - (count - 1) * 8) / count;
           return SingleChildScrollView(
             padding: const EdgeInsets.all(8),

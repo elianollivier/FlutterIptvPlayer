@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 import '../models/m3u_playlist.dart';
 import '../services/m3u_playlist_service.dart';
 import '../widgets/playlist_card.dart';
@@ -83,7 +84,7 @@ class _PlaylistListScreenState extends State<PlaylistListScreen> {
           : LayoutBuilder(
               builder: (context, constraints) {
                 final count =
-                    (constraints.maxWidth / 160).round().clamp(1, 6).toInt();
+                    max(1, (constraints.maxWidth / 160).floor());
                 final itemWidth =
                     (constraints.maxWidth - (count - 1) * 8) / count;
                 return GridView.builder(
