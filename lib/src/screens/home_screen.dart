@@ -153,9 +153,9 @@ class _HomeScreenState extends State<HomeScreen> {
         builder: (context, constraints) {
           final count =
               (constraints.maxWidth / 160).round().clamp(1, 6).toInt();
-          final itemWidth = (constraints.maxWidth - (count - 1) * 8) / count;
+          final itemWidth = ((constraints.maxWidth - (count - 1) * 8)-12) / count;
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(5),
             child: ReorderableWrap(
               spacing: 8,
               runSpacing: 8,
