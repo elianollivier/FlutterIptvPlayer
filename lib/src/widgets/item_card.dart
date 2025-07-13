@@ -252,15 +252,16 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
       onExit: (_) => setState(() => _hovered = false),
       child: LayoutBuilder(
         builder: (context, constraints) {
+          final boundedHeight = constraints.hasBoundedHeight &&
+              constraints.maxHeight != double.infinity;
+          final content = InkWell(
+            onTap: _open,
+            child: AspectRatio(aspectRatio: 0.9, child: card),
+          );
           return Column(
-            mainAxisSize: MainAxisSize.max,
+            mainAxisSize: boundedHeight ? MainAxisSize.max : MainAxisSize.min,
             children: [
-              Expanded(
-                child: InkWell(
-                  onTap: _open,
-                  child: AspectRatio(aspectRatio: 0.9, child: card),
-                ),
-              ),
+              if (boundedHeight) Expanded(child: content) else content,
               Flexible(child: linksList),
             ],
           );
