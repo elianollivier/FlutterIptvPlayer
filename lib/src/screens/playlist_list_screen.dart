@@ -83,7 +83,7 @@ class _PlaylistListScreenState extends State<PlaylistListScreen> {
           : LayoutBuilder(
               builder: (context, constraints) {
                 final count =
-                    (constraints.maxWidth / 160).floor().clamp(1, 6).toInt();
+                    (constraints.maxWidth / 160).round().clamp(1, 6).toInt();
                 final itemWidth =
                     (constraints.maxWidth - (count - 1) * 8) / count;
                 return GridView.builder(
