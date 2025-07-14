@@ -28,6 +28,19 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
   bool _expanded = false;
   int _selectedIndex = 0;
   int? _hoveredIndex;
+  late final ScrollController _scrollCtrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollCtrl = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _scrollCtrl.dispose();
+    super.dispose();
+  }
 
   bool get _shouldShowViewed {
     if (!widget.item.viewed || widget.item.type != IptvItemType.media) {
@@ -115,6 +128,15 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
                           size: 48,
                         ),
             ),
+            previewWidget,
+            if (_shouldShowViewed)
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: Container(
+                    color: Colors.black.withOpacity(0.4),
+                  ),
+                ),
+              ),
             if (widget.item.type == IptvItemType.folder)
               Positioned(
                 top: 4,
@@ -195,15 +217,6 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
                   ),
                 ),
               ),
-            if (_shouldShowViewed)
-              Positioned.fill(
-                child: IgnorePointer(
-                  child: Container(
-                    color: Colors.black.withOpacity(0.4),
-                  ),
-                ),
-              ),
-            previewWidget,
           ],
         ),
       ),
@@ -229,8 +242,11 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
               ),
               constraints: const BoxConstraints(maxHeight: 200),
               child: Scrollbar(
+                controller: _scrollCtrl,
                 thumbVisibility: true,
+                interactive: true,
                 child: ListView.builder(
+                  controller: _scrollCtrl,
                   shrinkWrap: true,
                   itemCount: widget.item.links.length,
                   itemBuilder: (context, i) {

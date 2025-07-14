@@ -98,14 +98,16 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
         parentId: parentId,
       ));
       for (final ep in bySeason[season]!) {
+        final epLabel =
+            'S${ep.season.toString().padLeft(2, '0')} E${ep.episode.toString().padLeft(2, '0')}';
         items.add(IptvItem(
           id: const Uuid().v4(),
           type: IptvItemType.media,
-          name: ep.name,
+          name: epLabel,
           logoUrl: ep.logo,
           links: [
             ChannelLink(
-              name: ep.name,
+              name: epLabel,
               url: ep.url,
               logo: ep.logo,
               resolution: '',
