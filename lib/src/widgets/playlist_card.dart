@@ -92,7 +92,16 @@ class _PlaylistCardState extends State<PlaylistCard> {
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
       child: InkWell(
-        onTap: widget.onSelect,
+        onTap: Platform.isAndroid || Platform.isIOS
+            ? () {
+                if (_hovered) {
+                  widget.onSelect();
+                  setState(() => _hovered = false);
+                } else {
+                  setState(() => _hovered = true);
+                }
+              }
+            : widget.onSelect,
         child: card,
       ),
     );

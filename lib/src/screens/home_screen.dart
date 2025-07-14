@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:android_intent_plus/android_intent.dart';
 
 import '../models/iptv_models.dart';
 import '../services/storage_service.dart';
@@ -122,9 +123,26 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _playMedia(IptvItem item, ChannelLink link) async {
-    final exePath = await SettingsService().getVlcPath();
+    if (Platform.isAndroid) {
+      final intent = AndroidIntent(
+        action: 'action_view',
+        data: link.url,
+        package: 'org.videolan.vlc',
+      );
+      try {
+        await intent.launch();
+      } catch (e) {
+        _logger.e('Could not open VLC', error: e);
+      }
+    } else {
+      final exePath = await SettingsService().getVlcPath();
+      try {
+        await Process.start(exePath, [link.url], runInShell: true);
+      } catch (e) {
+        _logger.e('Could not open VLC', error: e);
+      }
+    }
     try {
-      await Process.start(exePath, [link.url], runInShell: true);
       final index = _allItems.indexWhere((e) => e.id == item.id);
       if (_isViewableMedia(item) && index >= 0 && !_allItems[index].viewed) {
         setState(() {
@@ -141,9 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
         });
         await _storage.saveItems(_allItems);
       }
-    } catch (e) {
-      _logger.e('Could not open VLC', error: e);
-    }
+    } catch (_) {}
   }
 
   Future<void> _reorder(int oldIndex, int newIndex) async {
