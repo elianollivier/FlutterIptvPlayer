@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 
@@ -22,6 +23,13 @@ class PlaylistCard extends StatefulWidget {
 
 class _PlaylistCardState extends State<PlaylistCard> {
   bool _hovered = false;
+  Timer? _hoverTimer;
+
+  @override
+  void dispose() {
+    _hoverTimer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,15 +98,25 @@ class _PlaylistCardState extends State<PlaylistCard> {
 
     return MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
-      onExit: (_) => setState(() => _hovered = false),
+      onExit: (_) {
+        _hoverTimer?.cancel();
+        setState(() => _hovered = false);
+      },
       child: InkWell(
         onTap: Platform.isAndroid || Platform.isIOS
             ? () {
                 if (_hovered) {
+                  _hoverTimer?.cancel();
                   widget.onSelect();
                   setState(() => _hovered = false);
                 } else {
                   setState(() => _hovered = true);
+                  _hoverTimer?.cancel();
+                  _hoverTimer = Timer(const Duration(seconds: 3), () {
+                    if (mounted) {
+                      setState(() => _hovered = false);
+                    }
+                  });
                 }
               }
             : widget.onSelect,

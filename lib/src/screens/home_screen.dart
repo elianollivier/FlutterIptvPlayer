@@ -126,8 +126,9 @@ class _HomeScreenState extends State<HomeScreen> {
     if (Platform.isAndroid) {
       final intent = AndroidIntent(
         action: 'action_view',
-        data: link.url,
+        data: Uri.encodeFull(link.url),
         package: 'org.videolan.vlc',
+        type: 'video/*',
       );
       try {
         await intent.launch();

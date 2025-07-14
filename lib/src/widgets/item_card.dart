@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 
@@ -28,6 +29,7 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
   bool _expanded = false;
   int _selectedIndex = 0;
   int? _hoveredIndex;
+  Timer? _hoverTimer;
   late final ScrollController _scrollCtrl;
 
   @override
@@ -38,6 +40,7 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
 
   @override
   void dispose() {
+    _hoverTimer?.cancel();
     _scrollCtrl.dispose();
     super.dispose();
   }
@@ -54,6 +57,7 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
   }
 
   void _open() {
+    _hoverTimer?.cancel();
     if (widget.item.type == IptvItemType.folder) {
       widget.onOpenFolder?.call();
     } else if (widget.item.links.isNotEmpty) {
@@ -298,7 +302,10 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
 
     return MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
-      onExit: (_) => setState(() => _hovered = false),
+      onExit: (_) {
+        _hoverTimer?.cancel();
+        setState(() => _hovered = false);
+      },
       child: LayoutBuilder(
         builder: (context, constraints) {
           final boundedHeight = constraints.hasBoundedHeight &&
@@ -308,10 +315,17 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
             onTap: isMobile
                 ? () {
                     if (_hovered) {
+                      _hoverTimer?.cancel();
                       _open();
                       setState(() => _hovered = false);
                     } else {
                       setState(() => _hovered = true);
+                      _hoverTimer?.cancel();
+                      _hoverTimer = Timer(const Duration(seconds: 3), () {
+                        if (mounted) {
+                          setState(() => _hovered = false);
+                        }
+                      });
                     }
                   }
                 : _open,
