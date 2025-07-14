@@ -303,8 +303,18 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
         builder: (context, constraints) {
           final boundedHeight = constraints.hasBoundedHeight &&
               constraints.maxHeight != double.infinity;
+          final isMobile = Platform.isAndroid || Platform.isIOS;
           final content = InkWell(
-            onTap: _open,
+            onTap: isMobile
+                ? () {
+                    if (_hovered) {
+                      _open();
+                      setState(() => _hovered = false);
+                    } else {
+                      setState(() => _hovered = true);
+                    }
+                  }
+                : _open,
             child: AspectRatio(aspectRatio: 0.9, child: card),
           );
           return Column(

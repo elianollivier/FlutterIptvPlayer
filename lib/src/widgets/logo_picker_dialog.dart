@@ -116,7 +116,16 @@ class _LogoTileState extends State<_LogoTile> {
         fit: StackFit.expand,
         children: [
           GestureDetector(
-            onTap: widget.onSelect,
+            onTap: Platform.isAndroid || Platform.isIOS
+                ? () {
+                    if (_hovered) {
+                      widget.onSelect();
+                      setState(() => _hovered = false);
+                    } else {
+                      setState(() => _hovered = true);
+                    }
+                  }
+                : widget.onSelect,
             child: Stack(
               fit: StackFit.expand,
               children: [
