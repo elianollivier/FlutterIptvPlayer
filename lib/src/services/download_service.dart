@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../constants.dart';
+
 import '../models/download_task.dart';
 
 class DownloadService {
@@ -35,9 +37,9 @@ class DownloadService {
   Future<void> _start(DownloadTask task) async {
     final client = http.Client();
     try {
-      final response = await client.send(
-        http.Request('GET', Uri.parse(task.url)),
-      );
+      final request = http.Request('GET', Uri.parse(task.url))
+        ..headers['User-Agent'] = Constants.userAgent;
+      final response = await client.send(request);
       task.total = response.contentLength ?? 0;
       final sink = task.file.openWrite();
       await for (final chunk in response.stream) {
