@@ -7,6 +7,8 @@ import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
+import '../constants.dart';
+
 import '../models/m3u_playlist.dart';
 
 class M3uPlaylistService {
@@ -54,11 +56,13 @@ class M3uPlaylistService {
     return dest.path;
   }
 
-  Future<String?> downloadFile(String url, void Function(double) onProgress) async {
+  Future<String?> downloadFile(
+      String url, void Function(double) onProgress) async {
     final client = http.Client();
     try {
-      final response =
-          await client.send(http.Request('GET', Uri.parse(url)));
+      final request = http.Request('GET', Uri.parse(url))
+        ..headers['User-Agent'] = Constants.userAgent;
+      final response = await client.send(request);
       final contentLength = response.contentLength ?? 0;
       final dir = await _getDir();
       final file = File('${dir.path}/${const Uuid().v4()}.m3u');
