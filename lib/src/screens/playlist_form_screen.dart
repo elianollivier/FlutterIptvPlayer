@@ -59,9 +59,22 @@ class _PlaylistFormScreenState extends State<PlaylistFormScreen> {
       _downloading = true;
       _progress = 0;
     });
-    final path = await _service.downloadFile(url, (p) {
-      setState(() => _progress = p);
-    });
+    String? path;
+    try {
+      path = await _service.downloadFile(url, (p) {
+        setState(() => _progress = p);
+      });
+      if (path == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Le téléchargement a échoué')),
+        );
+      }
+    } catch (_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Le téléchargement a échoué')),
+      );
+    }
+    if (!mounted) return;
     setState(() {
       _downloading = false;
       _progress = 0;

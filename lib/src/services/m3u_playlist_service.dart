@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
@@ -10,6 +11,8 @@ import '../models/m3u_playlist.dart';
 
 class M3uPlaylistService {
   const M3uPlaylistService();
+
+  static final Logger _logger = Logger();
 
   Future<Directory> _getDir() async {
     final dir = await getApplicationDocumentsDirectory();
@@ -52,21 +55,30 @@ class M3uPlaylistService {
   }
 
   Future<String?> downloadFile(String url, void Function(double) onProgress) async {
-    final response = await http.Client().send(http.Request('GET', Uri.parse(url)));
-    final contentLength = response.contentLength ?? 0;
-    final dir = await _getDir();
-    final file = File('${dir.path}/${const Uuid().v4()}.m3u');
-    final sink = file.openWrite();
-    int received = 0;
-    await for (final chunk in response.stream) {
-      received += chunk.length;
-      sink.add(chunk);
-      if (contentLength > 0) {
-        onProgress(received / contentLength);
+    final client = http.Client();
+    try {
+      final response =
+          await client.send(http.Request('GET', Uri.parse(url)));
+      final contentLength = response.contentLength ?? 0;
+      final dir = await _getDir();
+      final file = File('${dir.path}/${const Uuid().v4()}.m3u');
+      final sink = file.openWrite();
+      int received = 0;
+      await for (final chunk in response.stream) {
+        received += chunk.length;
+        sink.add(chunk);
+        if (contentLength > 0) {
+          onProgress(received / contentLength);
+        }
       }
+      await sink.close();
+      return file.path;
+    } catch (e) {
+      _logger.e('Download playlist failed', error: e);
+      return null;
+    } finally {
+      client.close();
     }
-    await sink.close();
-    return file.path;
   }
 
   Future<void> delete(M3uPlaylist playlist) async {
