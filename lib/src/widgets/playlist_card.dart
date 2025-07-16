@@ -44,8 +44,8 @@ class _PlaylistCardState extends State<PlaylistCard> {
           children: [
             Center(
               child: widget.playlist.logoPath != null
-                  ? Image.file(
-                      File(widget.playlist.logoPath!),
+                  ? Image.network(
+                      widget.playlist.logoPath!,
                       fit: BoxFit.contain,
                     )
                   : const Icon(Icons.playlist_play, size: 48),

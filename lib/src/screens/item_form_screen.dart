@@ -130,8 +130,8 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
     );
     if (result != null) {
       setState(() {
-        _logoPath = result;
-        _logoUrl = null;
+        _logoPath = null;
+        _logoUrl = result;
       });
     }
   }

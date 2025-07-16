@@ -4,6 +4,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
+import 'supabase_service.dart';
+
 class LogoService {
   Future<Directory> _getDir() async {
     final dir = await getApplicationDocumentsDirectory();
@@ -29,7 +31,7 @@ class LogoService {
       final ext = src.path.split('.').last;
       final dest = File('${dir.path}/${const Uuid().v4()}.$ext');
       await src.copy(dest.path);
-      return dest.path;
+      return SupabaseService.instance.uploadLogo(dest);
     }
     return null;
   }
