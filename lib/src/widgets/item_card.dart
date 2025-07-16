@@ -346,7 +346,7 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
 
     return AnimatedScale(
       scale: widget.dragging ? 1.1 : 1.0,
-      duration: const Duration(milliseconds: 150),
+      duration: const Duration(milliseconds: 200),
       child: cardContent,
     );
   }
