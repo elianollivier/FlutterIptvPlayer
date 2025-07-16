@@ -227,13 +227,19 @@ class _HomeScreenState extends State<HomeScreen> {
               spacing: 8,
               runSpacing: 8,
               onReorder: _reorder,
+              onNoReorder: (index) {
+                setState(() {
+                  _draggingId = null;
+                });
+              },
               onReorderStarted: (index) {
                 setState(() {
                   _draggingId = _items[index].id;
                 });
               },
               needsLongPressDraggable: Platform.isAndroid,
-              reorderAnimationDuration: const Duration(milliseconds: 350),
+              reorderAnimationDuration: const Duration(milliseconds: 400),
+              scrollAnimationDuration: const Duration(milliseconds: 400),
               buildDraggableFeedback: (context, constraints, child) => Material(
                 color: Colors.transparent,
                 child: Transform.scale(
