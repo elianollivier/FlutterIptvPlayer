@@ -1,9 +1,19 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 
-import 'src/screens/home_screen.dart';
-import 'src/widgets/download_overlay.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-void main() {
+import 'src/screens/home_screen.dart';
+import 'src/screens/login_screen.dart';
+import 'src/widgets/download_overlay.dart';
+import 'src/constants.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Supabase.initialize(
+    url: Constants.supabaseUrl,
+    anonKey: Constants.supabaseAnonKey,
+  );
   runApp(const MyApp());
 }
 
@@ -21,7 +31,15 @@ class MyApp extends StatelessWidget {
       builder: (context, child) => DownloadOverlay(
         child: child ?? const SizedBox.shrink(),
       ),
-      home: const HomeScreen(),
+      home: _loggedIn() ? const HomeScreen() : const LoginScreen(),
     );
+  }
+
+  bool _loggedIn() {
+    try {
+      return Supabase.instance.client.auth.currentUser != null;
+    } catch (_) {
+      return true;
+    }
   }
 }

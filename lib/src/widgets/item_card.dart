@@ -1,5 +1,5 @@
-import 'dart:io';
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 
@@ -112,9 +112,15 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
           children: [
             Center(
               child: widget.item.logoPath != null
-                  ? Image.file(
-                      File(widget.item.logoPath!),
+                  ? Image.network(
+                      widget.item.logoPath!,
                       fit: BoxFit.contain,
+                      errorBuilder: (_, __, ___) => Icon(
+                        widget.item.type == IptvItemType.folder
+                            ? Icons.folder
+                            : Icons.tv,
+                        size: 48,
+                      ),
                     )
                   : widget.item.logoUrl != null
                       ? Image.network(

@@ -10,6 +10,7 @@ import 'package:uuid/uuid.dart';
 import '../constants.dart';
 
 import '../models/m3u_playlist.dart';
+import 'supabase_service.dart';
 
 class M3uPlaylistService {
   const M3uPlaylistService();
@@ -32,17 +33,30 @@ class M3uPlaylistService {
 
   Future<List<M3uPlaylist>> load() async {
     final file = await _getFile();
-    if (!await file.exists()) return [];
-    final data = await file.readAsString();
-    final list = jsonDecode(data) as List<dynamic>;
-    return list
-        .map((e) => M3uPlaylist.fromJson(e as Map<String, dynamic>))
-        .toList();
+    List<M3uPlaylist> list = [];
+    if (await file.exists()) {
+      final data = await file.readAsString();
+      list = (jsonDecode(data) as List<dynamic>)
+          .map((e) => M3uPlaylist.fromJson(e as Map<String, dynamic>))
+          .toList();
+    }
+    if (SupabaseService.instance.isLoggedIn) {
+      try {
+        list = await SupabaseService.instance.fetchPlaylists();
+        await save(list);
+      } catch (e) {
+        _logger.e('Remote load failed', error: e);
+      }
+    }
+    return list;
   }
 
   Future<void> save(List<M3uPlaylist> items) async {
     final file = await _getFile();
     await file.writeAsString(jsonEncode(items.map((e) => e.toJson()).toList()));
+    if (SupabaseService.instance.isLoggedIn) {
+      await SupabaseService.instance.savePlaylists(items);
+    }
   }
 
   Future<String?> importLocalFile() async {
