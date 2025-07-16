@@ -26,6 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final StorageService _storage = StorageService();
   final Logger _logger = Logger();
   List<IptvItem> _allItems = [];
+  String? _draggingId;
 
   bool _isViewableMedia(IptvItem item) {
     if (item.type != IptvItemType.media) return false;
@@ -181,6 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     setState(() {
       _allItems = newAll;
+      _draggingId = null;
     });
     await _storage.saveItems(_allItems);
   }
@@ -225,11 +227,19 @@ class _HomeScreenState extends State<HomeScreen> {
               spacing: 8,
               runSpacing: 8,
               onReorder: _reorder,
-              needsLongPressDraggable: false,
+              onReorderStarted: (index) {
+                setState(() {
+                  _draggingId = _items[index].id;
+                });
+              },
+              needsLongPressDraggable: Platform.isAndroid,
               reorderAnimationDuration: const Duration(milliseconds: 250),
               buildDraggableFeedback: (context, constraints, child) => Material(
                 color: Colors.transparent,
-                child: child,
+                child: Transform.scale(
+                  scale: 1.1,
+                  child: child,
+                ),
               ),
               children: [
                 for (final item in _items)
@@ -245,6 +255,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       onOpenLink: item.type == IptvItemType.media
                           ? (link) => _playMedia(item, link)
                           : null,
+                      dragging: _draggingId == item.id,
                     ),
                   ),
               ],

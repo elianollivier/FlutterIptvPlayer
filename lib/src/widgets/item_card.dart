@@ -13,12 +13,14 @@ class ItemCard extends StatefulWidget {
     required this.onEdit,
     this.onOpenFolder,
     this.onOpenLink,
+    this.dragging = false,
   });
 
   final IptvItem item;
   final VoidCallback onEdit;
   final VoidCallback? onOpenFolder;
   final ValueChanged<ChannelLink>? onOpenLink;
+  final bool dragging;
 
   @override
   State<ItemCard> createState() => _ItemCardState();
@@ -300,7 +302,7 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
           : const SizedBox.shrink(),
     );
 
-    return MouseRegion(
+    final cardContent = MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) {
         _hoverTimer?.cancel();
@@ -340,6 +342,12 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
           );
         },
       ),
+    );
+
+    return AnimatedScale(
+      scale: widget.dragging ? 1.1 : 1.0,
+      duration: const Duration(milliseconds: 150),
+      child: cardContent,
     );
   }
 }
