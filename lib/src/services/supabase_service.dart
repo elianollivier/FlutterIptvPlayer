@@ -106,7 +106,9 @@ class SupabaseService {
     try {
       final client = _maybeClient;
       if (client == null) return [];
-      final files = await client.storage.from('logos').list();
+      final files = await client.storage
+          .from('logos')
+          .list(searchOptions: const SearchOptions(limit: 1000));
       final urls = files
           .map((f) => client.storage.from('logos').getPublicUrl(f.name))
           .toList()
