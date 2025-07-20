@@ -101,4 +101,31 @@ class SupabaseService {
       return null;
     }
   }
+
+  Future<List<String>> fetchLogos() async {
+    try {
+      final client = _maybeClient;
+      if (client == null) return [];
+      final files = await client.storage.from('logos').list();
+      final urls = files
+          .map((f) => client.storage.from('logos').getPublicUrl(f.name))
+          .toList()
+        ..sort();
+      return urls;
+    } catch (e) {
+      _logger.e('Fetch logos failed', error: e);
+      return [];
+    }
+  }
+
+  Future<void> deleteLogo(String url) async {
+    try {
+      final client = _maybeClient;
+      if (client == null) return;
+      final name = p.basename(url);
+      await client.storage.from('logos').remove([name]);
+    } catch (e) {
+      _logger.e('Delete logo failed', error: e);
+    }
+  }
 }
