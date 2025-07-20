@@ -94,8 +94,8 @@ class SupabaseService {
       final client = _maybeClient;
       if (client == null) return null;
       final name = p.basename(file.path);
-      await client.storage.from('logos').upload(name, file);
-      return client.storage.from('logos').getPublicUrl(name);
+      await client.storage.from('logos').upload('public/$name', file);
+      return client.storage.from('logos').getPublicUrl('public/$name');
     } catch (e) {
       _logger.e('Upload logo failed', error: e);
       return null;
@@ -108,9 +108,9 @@ class SupabaseService {
       if (client == null) return [];
       final files = await client.storage
           .from('logos')
-          .list(searchOptions: const SearchOptions(limit: 1000));
+          .list(path: 'public', searchOptions: const SearchOptions(limit: 1000));
       final urls = files
-          .map((f) => client.storage.from('logos').getPublicUrl(f.name))
+          .map((f) => client.storage.from('logos').getPublicUrl('public/${f.name}'))
           .toList()
         ..sort();
       return urls;
@@ -125,7 +125,7 @@ class SupabaseService {
       final client = _maybeClient;
       if (client == null) return;
       final name = p.basename(url);
-      await client.storage.from('logos').remove([name]);
+      await client.storage.from('logos').remove(['public/$name']);
     } catch (e) {
       _logger.e('Delete logo failed', error: e);
     }
