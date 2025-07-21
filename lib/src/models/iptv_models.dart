@@ -54,6 +54,7 @@ class IptvItem {
   final List<ChannelLink> links;
   final String? parentId;
   final bool viewed;
+  final int position;
 
   IptvItem({
     required this.id,
@@ -64,6 +65,7 @@ class IptvItem {
     this.links = const [],
     this.parentId,
     this.viewed = false,
+    this.position = 0,
   });
 
   factory IptvItem.fromJson(Map<String, dynamic> json) => IptvItem(
@@ -77,6 +79,7 @@ class IptvItem {
             .toList(),
         parentId: json['parentId'] as String?,
         viewed: json['viewed'] as bool? ?? false,
+        position: json['position'] as int? ?? 0,
       );
 
   Map<String, dynamic> toJson() => {
@@ -88,6 +91,7 @@ class IptvItem {
         'links': links.map((e) => e.toJson()).toList(),
         'parentId': parentId,
         'viewed': viewed,
+        'position': position,
       };
 
   @override

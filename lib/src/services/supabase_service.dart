@@ -50,7 +50,11 @@ class SupabaseService {
   Future<List<IptvItem>> fetchItems() async {
     final client = _maybeClient;
     if (client == null) return [];
-    final data = await client.from('items').select() as List<dynamic>;
+    final data = await client
+        .from('items')
+        .select()
+        .order('parentId')
+        .order('position') as List<dynamic>;
     return data
         .map((e) => IptvItem.fromJson(e as Map<String, dynamic>))
         .toList();
