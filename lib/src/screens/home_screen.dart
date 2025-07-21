@@ -50,6 +50,25 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  void _updatePositions() {
+    final Map<String?, int> counters = {};
+    _allItems = _allItems.map((item) {
+      final index = counters[item.parentId] ?? 0;
+      counters[item.parentId] = index + 1;
+      return IptvItem(
+        id: item.id,
+        type: item.type,
+        name: item.name,
+        logoPath: item.logoPath,
+        logoUrl: item.logoUrl,
+        links: item.links,
+        parentId: item.parentId,
+        viewed: item.viewed,
+        position: index,
+      );
+    }).toList();
+  }
+
   List<IptvItem> get _items =>
       _allItems.where((e) => e.parentId == widget.parentId).toList();
 
@@ -74,6 +93,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _allItems.add(result);
         });
       }
+      _updatePositions();
       await _storage.saveItems(_allItems);
     }
   }
@@ -89,6 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         _allItems.removeWhere((e) => e.id == item.id);
       });
+      _updatePositions();
       await _storage.saveItems(_allItems);
     } else if (result is Map) {
       final IptvItem updated = result['item'] as IptvItem;
@@ -101,6 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
         }
         _allItems.addAll(children);
       });
+      _updatePositions();
       await _storage.saveItems(_allItems);
     } else if (result is IptvItem) {
       final index = _allItems.indexWhere((e) => e.id == result.id);
@@ -109,6 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _allItems[index] = result;
         }
       });
+      _updatePositions();
       await _storage.saveItems(_allItems);
     }
   }
@@ -184,6 +207,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _allItems = newAll;
       _draggingId = null;
     });
+    _updatePositions();
     await _storage.saveItems(_allItems);
   }
 

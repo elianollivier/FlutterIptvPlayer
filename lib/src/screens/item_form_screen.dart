@@ -83,6 +83,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
       links: _links,
       parentId: widget.parentId ?? widget.item?.parentId,
       viewed: _canBeViewed ? _viewed : false,
+      position: widget.item?.position ?? 0,
     );
   }
 
