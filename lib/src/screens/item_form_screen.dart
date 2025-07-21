@@ -33,6 +33,11 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
   M3uSeries? _series;
   bool _viewed = false;
 
+  String get _logoLabel {
+    final path = _logoPath ?? _logoUrl;
+    return path != null ? path.split('/').last : 'Aucun logo sélectionné';
+  }
+
   bool _onlyFileLinks(List<ChannelLink> links) {
     if (links.isEmpty) return false;
     return links.every((l) {
@@ -338,11 +343,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        Expanded(
-                          child: _logoPath == null
-                              ? const Text('Aucun logo s\u00e9lectionn\u00e9')
-                              : Text(_logoPath!),
-                        ),
+                        Expanded(child: Text(_logoLabel)),
                         IconButton(
                           onPressed: _pickLogo,
                           icon: const Icon(Icons.folder_open),

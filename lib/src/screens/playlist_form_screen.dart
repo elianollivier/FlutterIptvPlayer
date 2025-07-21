@@ -26,6 +26,9 @@ class _PlaylistFormScreenState extends State<PlaylistFormScreen> {
   bool _downloading = false;
   final _formKey = GlobalKey<FormState>();
 
+  String get _logoLabel =>
+      _logo != null ? _logo!.split('/').last : 'Aucun logo sélectionné';
+
   @override
   void initState() {
     super.initState();
@@ -124,7 +127,7 @@ class _PlaylistFormScreenState extends State<PlaylistFormScreen> {
               ),
               const SizedBox(height: 12),
               ListTile(
-                title: Text(_logo ?? 'Aucun logo sélectionné'),
+                title: Text(_logoLabel),
                 trailing: IconButton(
                   icon: const Icon(Icons.folder_open),
                   onPressed: _pickLogo,
