@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../services/supabase_service.dart';
 import 'home_screen.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -29,8 +30,10 @@ class _LoginScreenState extends State<LoginScreen> {
         context,
         MaterialPageRoute(builder: (_) => const HomeScreen()),
       );
+    } on AuthException catch (e) {
+      setState(() => _error = e.message);
     } catch (e) {
-      setState(() => _error = 'Login failed');
+      setState(() => _error = 'Login failed: $e');
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -49,8 +52,10 @@ class _LoginScreenState extends State<LoginScreen> {
         context,
         MaterialPageRoute(builder: (_) => const HomeScreen()),
       );
+    } on AuthException catch (e) {
+      setState(() => _error = e.message);
     } catch (e) {
-      setState(() => _error = 'Register failed');
+      setState(() => _error = 'Register failed: $e');
     } finally {
       if (mounted) setState(() => _loading = false);
     }
