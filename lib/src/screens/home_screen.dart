@@ -69,8 +69,12 @@ class _HomeScreenState extends State<HomeScreen> {
     }).toList();
   }
 
-  List<IptvItem> get _items =>
-      _allItems.where((e) => e.parentId == widget.parentId).toList();
+  List<IptvItem> get _items {
+    final items =
+        _allItems.where((e) => e.parentId == widget.parentId).toList();
+    items.sort((a, b) => a.position.compareTo(b.position));
+    return items;
+  }
 
   Future<void> _addItem() async {
     final result = await Navigator.push<dynamic>(
@@ -188,8 +192,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _reorder(int oldIndex, int newIndex) async {
-    final childItems =
-        _allItems.where((e) => e.parentId == widget.parentId).toList();
+    final childItems = _allItems
+        .where((e) => e.parentId == widget.parentId)
+        .toList()
+      ..sort((a, b) => a.position.compareTo(b.position));
     final item = childItems.removeAt(oldIndex);
     childItems.insert(newIndex, item);
 
