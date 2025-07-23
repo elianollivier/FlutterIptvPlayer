@@ -52,15 +52,22 @@ class _SeriesListScreenState extends State<SeriesListScreen> {
         children: [
           Padding(
             padding: const EdgeInsets.all(8),
-            child: TextField(
-              controller: _queryCtrl,
-              decoration: const InputDecoration(labelText: 'Rechercher'),
-              onChanged: (v) {
-                setState(() => _query = v);
-                if (v.isEmpty || v.length >= 3) {
-                  _load();
-                }
-              },
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _queryCtrl,
+                    decoration: const InputDecoration(labelText: 'Rechercher'),
+                    onChanged: (v) => setState(() => _query = v),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton.icon(
+                  onPressed: _load,
+                  icon: const Icon(Icons.search),
+                  label: const Text('Rechercher'),
+                ),
+              ],
             ),
           ),
           if (_loading) const LinearProgressIndicator(),
