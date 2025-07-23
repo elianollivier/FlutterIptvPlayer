@@ -107,5 +107,8 @@ class M3uPlaylistService {
     final items = await load();
     items.removeWhere((e) => e.id == playlist.id);
     await save(items);
+    if (SupabaseService.instance.isLoggedIn) {
+      await SupabaseService.instance.deletePlaylists([playlist.id]);
+    }
   }
 }
