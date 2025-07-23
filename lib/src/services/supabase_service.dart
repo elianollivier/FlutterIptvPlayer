@@ -120,8 +120,9 @@ class SupabaseService {
       final client = _maybeClient;
       if (client == null) return null;
       final name = p.basename(file.path);
-      await client.storage.from('logos').upload('public/$name', file);
-      return client.storage.from('logos').getPublicUrl('public/$name');
+      final safeName = Uri.encodeComponent(name);
+      await client.storage.from('logos').upload('public/$safeName', file);
+      return client.storage.from('logos').getPublicUrl('public/$safeName');
     } catch (e) {
       _logger.e('Upload logo failed', error: e);
       return null;
