@@ -1,5 +1,9 @@
+import 'dart:io';
+
+import 'package:android_intent_plus/android_intent.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:logger/logger.dart';
 import 'package:uuid/uuid.dart';
 
 import 'm3u_import_screen.dart';
@@ -11,6 +15,7 @@ import '../widgets/link_label.dart';
 import '../widgets/logo_picker_dialog.dart';
 import '../models/iptv_models.dart';
 import '../services/download_service.dart';
+import '../services/settings_service.dart';
 import '../models/m3u_series.dart';
 
 class ItemFormScreen extends StatefulWidget {
@@ -25,6 +30,7 @@ class ItemFormScreen extends StatefulWidget {
 
 class _ItemFormScreenState extends State<ItemFormScreen> {
   final _formKey = GlobalKey<FormState>();
+  final Logger _logger = Logger();
   late IptvItemType _type;
   late TextEditingController _nameCtrl;
   String? _logoPath;
@@ -60,6 +66,29 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
         ? uri.pathSegments.last.split('?').first
         : link.name;
     await DownloadService.instance.download(link.url, name);
+  }
+
+  Future<void> _openLink(String url) async {
+    if (Platform.isAndroid) {
+      final intent = AndroidIntent(
+        action: 'action_view',
+        data: Uri.encodeFull(url),
+        package: 'org.videolan.vlc',
+        type: 'video/*',
+      );
+      try {
+        await intent.launch();
+      } catch (e) {
+        _logger.e('Could not open VLC', error: e);
+      }
+    } else {
+      final exePath = await SettingsService().getVlcPath();
+      try {
+        await Process.start(exePath, [url], runInShell: true);
+      } catch (e) {
+        _logger.e('Could not open VLC', error: e);
+      }
+    }
   }
 
   @override
@@ -412,6 +441,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                             key: ValueKey('link_$index'),
                             index: index,
                             child: ListTile(
+                              onTap: () => _openLink(link.url),
                               title: LinkLabel(link: link),
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
