@@ -411,12 +411,12 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                           Row(
                             children: [
                               IconButton(
-                                onPressed: _importM3u,
-                                icon: const Icon(Icons.file_upload),
-                              ),
-                              IconButton(
                                 onPressed: () => _editLink(),
                                 icon: const Icon(Icons.add),
+                              ),
+                              IconButton(
+                                onPressed: _importM3u,
+                                icon: const Icon(Icons.file_upload),
                               ),
                             ],
                           ),

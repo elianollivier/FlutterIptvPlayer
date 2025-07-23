@@ -33,12 +33,13 @@ class _PlaylistViewScreenState extends State<PlaylistViewScreen> {
   }
 
   Future<void> _load() async {
+    final currentQuery = _query;
     setState(() => _loading = true);
     final list = await _service.searchFile(
       widget.playlist.path,
-      query: _query,
+      query: currentQuery,
     );
-    if (!mounted) return;
+    if (!mounted || currentQuery != _query) return;
     setState(() {
       _links = list;
       _loading = false;
