@@ -8,6 +8,7 @@ import 'package:android_intent_plus/android_intent.dart';
 import '../models/iptv_models.dart';
 import '../services/storage_service.dart';
 import '../services/settings_service.dart';
+import '../services/supabase_service.dart';
 import '../widgets/item_card.dart';
 import 'item_form_screen.dart';
 import 'playlist_list_screen.dart';
@@ -115,6 +116,9 @@ class _HomeScreenState extends State<HomeScreen> {
       });
       _updatePositions();
       await _storage.saveItems(_allItems);
+      if (SupabaseService.instance.isLoggedIn) {
+        await SupabaseService.instance.deleteItems([item.id]);
+      }
     } else if (result is Map) {
       final IptvItem updated = result['item'] as IptvItem;
       final List<IptvItem> children =

@@ -71,6 +71,17 @@ class SupabaseService {
     }
   }
 
+  Future<void> deleteItems(List<String> ids) async {
+    try {
+      final client = _maybeClient;
+      if (client != null && ids.isNotEmpty) {
+        await client.from('items').delete().inFilter('id', ids);
+      }
+    } catch (e) {
+      _logger.e('Delete items failed', error: e);
+    }
+  }
+
   Future<List<M3uPlaylist>> fetchPlaylists() async {
     final client = _maybeClient;
     if (client == null) return [];
@@ -90,6 +101,17 @@ class SupabaseService {
       }
     } catch (e) {
       _logger.e('Save playlists failed', error: e);
+    }
+  }
+
+  Future<void> deletePlaylists(List<String> ids) async {
+    try {
+      final client = _maybeClient;
+      if (client != null && ids.isNotEmpty) {
+        await client.from('playlists').delete().inFilter('id', ids);
+      }
+    } catch (e) {
+      _logger.e('Delete playlists failed', error: e);
     }
   }
 
