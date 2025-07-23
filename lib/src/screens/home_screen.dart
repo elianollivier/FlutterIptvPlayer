@@ -272,6 +272,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 });
               },
               needsLongPressDraggable: Platform.isAndroid,
+              textDirection: TextDirection.ltr,
+              verticalDirection: VerticalDirection.down,
               reorderAnimationDuration: const Duration(milliseconds: 400),
               scrollAnimationDuration: const Duration(milliseconds: 400),
               buildDraggableFeedback: (context, constraints, child) => Material(
