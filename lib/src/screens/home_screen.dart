@@ -74,9 +74,6 @@ class _HomeScreenState extends State<HomeScreen> {
     List<IptvItem> items =
         _allItems.where((e) => e.parentId == widget.parentId).toList();
     items.sort((a, b) => a.position.compareTo(b.position));
-    if (!Platform.isAndroid && !Platform.isIOS) {
-      items = items.reversed.toList();
-    }
     return items;
   }
 
@@ -203,10 +200,6 @@ class _HomeScreenState extends State<HomeScreen> {
         .where((e) => e.parentId == widget.parentId)
         .toList()
       ..sort((a, b) => a.position.compareTo(b.position));
-    if (!Platform.isAndroid && !Platform.isIOS) {
-      oldIndex = childItems.length - 1 - oldIndex;
-      newIndex = childItems.length - 1 - newIndex;
-    }
     final item = childItems.removeAt(oldIndex);
     childItems.insert(newIndex, item);
 

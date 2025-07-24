@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:logger/logger.dart';
 import 'package:path/path.dart' as p;
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:uuid/uuid.dart';
 
 import '../models/iptv_models.dart';
 import '../models/m3u_playlist.dart';
@@ -119,8 +120,8 @@ class SupabaseService {
     try {
       final client = _maybeClient;
       if (client == null) return null;
-      final name = p.basename(file.path);
-      final safeName = Uri.encodeComponent(name);
+      final ext = p.extension(file.path);
+      final safeName = '${const Uuid().v4()}$ext';
       await client.storage.from('logos').upload('public/$safeName', file);
       return client.storage.from('logos').getPublicUrl('public/$safeName');
     } catch (e) {
