@@ -2,13 +2,34 @@ import 'dart:convert';
 
 enum IptvItemType { folder, media }
 
+class Note {
+  final String text;
+  final DateTime date;
+
+  Note({
+    required this.text,
+    required this.date,
+  });
+
+  factory Note.fromJson(Map<String, dynamic> json) => Note(
+        text: json['text'] as String? ?? '',
+        date: DateTime.tryParse(json['date'] as String? ?? '') ??
+            DateTime.now(),
+      );
+
+  Map<String, dynamic> toJson() => {
+        'text': text,
+        'date': date.toIso8601String(),
+      };
+}
+
 class ChannelLink {
   final String name;
   final String url;
   final String logo;
   final String resolution;
   final String fps;
-  final String notes;
+  final List<Note> notes;
 
   ChannelLink({
     required this.name,
@@ -16,7 +37,7 @@ class ChannelLink {
     this.logo = '',
     required this.resolution,
     required this.fps,
-    required this.notes,
+    this.notes = const [],
   });
 
   factory ChannelLink.fromJson(Map<String, dynamic> json) => ChannelLink(
@@ -25,7 +46,9 @@ class ChannelLink {
         logo: json['logo'] as String? ?? '',
         resolution: json['resolution'] as String? ?? '',
         fps: json['fps'] as String? ?? '',
-        notes: json['notes'] as String? ?? '',
+        notes: (json['notes'] as List<dynamic>? ?? [])
+            .map((e) => Note.fromJson(e as Map<String, dynamic>))
+            .toList(),
       );
 
   Map<String, dynamic> toJson() => {
@@ -34,7 +57,7 @@ class ChannelLink {
         'logo': logo,
         'resolution': resolution,
         'fps': fps,
-        'notes': notes,
+        'notes': notes.map((e) => e.toJson()).toList(),
       };
 }
 

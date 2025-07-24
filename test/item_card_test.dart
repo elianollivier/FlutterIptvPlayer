@@ -17,7 +17,7 @@ void main() {
         logo: '',
         resolution: '',
         fps: '',
-        notes: '',
+        notes: const [],
       ),
     ],
   );

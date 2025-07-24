@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
 import 'package:uuid/uuid.dart';
+import 'package:intl/intl.dart';
 
 import 'm3u_import_screen.dart';
 import 'playlist_list_screen.dart';
@@ -147,7 +148,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
               logo: ep.logo,
               resolution: '',
               fps: '',
-              notes: '',
+              notes: const [],
             ),
           ],
           parentId: seasonId,
@@ -179,7 +180,13 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
     final fpsCtrl = TextEditingController(
       text: fpsValue != null ? '$fpsValue' : '',
     );
-    final notesCtrl = TextEditingController(text: link?.notes ?? '');
+    final List<Map<String, dynamic>> notesData =
+        (link?.notes ?? [])
+            .map((n) => {
+                  'ctrl': TextEditingController(text: n.text),
+                  'date': n.date,
+                })
+            .toList();
 
     const resolutions = [
       '240p',
@@ -193,73 +200,133 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
 
     final result = await showDialog<ChannelLink>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Lien'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            TextField(
-              controller: nameCtrl,
-              decoration: const InputDecoration(labelText: 'Nom'),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text('Lien'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                TextField(
+                  controller: nameCtrl,
+                  decoration: const InputDecoration(labelText: 'Nom'),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: urlCtrl,
+                  decoration: const InputDecoration(labelText: 'URL'),
+                ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<String>(
+                  value: resolutions.contains(resCtrl.text) ? resCtrl.text : null,
+                  items: resolutions
+                      .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                      .toList(),
+                  decoration: InputDecoration(
+                    labelText: 'Résolution',
+                    filled: true,
+                    fillColor: Theme.of(context).colorScheme.surfaceVariant,
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8)),
+                  ),
+                  isExpanded: true,
+                  onChanged: (v) => resCtrl.text = v ?? '',
+                  dropdownColor: Theme.of(context).colorScheme.surfaceVariant,
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: fpsCtrl,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  decoration: const InputDecoration(labelText: 'FPS'),
+                ),
+                const SizedBox(height: 12),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    for (var i = 0; i < notesData.length; i++)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: notesData[i]['ctrl'] as TextEditingController,
+                                decoration:
+                                    const InputDecoration(labelText: 'Note'),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            TextButton(
+                              onPressed: () async {
+                                final picked = await showDatePicker(
+                                  context: context,
+                                  initialDate: notesData[i]['date'] as DateTime,
+                                  firstDate: DateTime(2000),
+                                  lastDate: DateTime(2100),
+                                );
+                                if (picked != null) {
+                                  setState(() => notesData[i]['date'] = picked);
+                                }
+                              },
+                              child: Text(
+                                DateFormat.yMd().format(
+                                    notesData[i]['date'] as DateTime),
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete),
+                              onPressed: () =>
+                                  setState(() => notesData.removeAt(i)),
+                            ),
+                          ],
+                        ),
+                      ),
+                    TextButton.icon(
+                      onPressed: () {
+                        setState(() {
+                          notesData.add({
+                            'ctrl': TextEditingController(),
+                            'date': DateTime.now(),
+                          });
+                        });
+                      },
+                      icon: const Icon(Icons.add),
+                      label: const Text('Ajouter une note'),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: urlCtrl,
-              decoration: const InputDecoration(labelText: 'URL'),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Annuler'),
             ),
-            const SizedBox(height: 12),
-            DropdownButtonFormField<String>(
-              value: resolutions.contains(resCtrl.text) ? resCtrl.text : null,
-              items: resolutions
-                  .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                  .toList(),
-              decoration: InputDecoration(
-                labelText: 'Résolution',
-                filled: true,
-                fillColor: Theme.of(context).colorScheme.surfaceVariant,
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-              ),
-              isExpanded: true,
-              onChanged: (v) => resCtrl.text = v ?? '',
-              dropdownColor: Theme.of(context).colorScheme.surfaceVariant,
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: fpsCtrl,
-              keyboardType: TextInputType.number,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              decoration: const InputDecoration(labelText: 'FPS'),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: notesCtrl,
-              decoration: const InputDecoration(labelText: 'Notes'),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(
+                  context,
+                  ChannelLink(
+                    name: nameCtrl.text,
+                    url: urlCtrl.text,
+                    resolution: resCtrl.text,
+                    fps: fpsCtrl.text,
+                    notes: notesData
+                        .map((e) => Note(
+                              text: (e['ctrl'] as TextEditingController).text,
+                              date: e['date'] as DateTime,
+                            ))
+                        .toList(),
+                  ),
+                );
+              },
+              child: const Text('OK'),
             ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Annuler'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(
-                context,
-                ChannelLink(
-                  name: nameCtrl.text,
-                  url: urlCtrl.text,
-                  resolution: resCtrl.text,
-                  fps: fpsCtrl.text,
-                  notes: notesCtrl.text,
-                ),
-              );
-            },
-            child: const Text('OK'),
-          ),
-        ],
       ),
     );
 
@@ -447,14 +514,15 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(link.url),
-                                  if (link.notes.isNotEmpty)
-                                    Text(
-                                      link.notes,
+                                  ...link.notes.map(
+                                    (n) => Text(
+                                      '${DateFormat.yMd().format(n.date)} - ${n.text}',
                                       style: const TextStyle(
                                         fontStyle: FontStyle.italic,
                                         color: Colors.grey,
                                       ),
                                     ),
+                                  ),
                                 ],
                               ),
                               trailing: Row(

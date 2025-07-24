@@ -29,14 +29,16 @@ class M3uService {
         logo = match != null ? match.group(1) : '';
       } else if (line.trim().isNotEmpty && !line.startsWith('#')) {
         if (name != null) {
-          result.add(ChannelLink(
-            name: name,
-            url: line.trim(),
-            logo: logo ?? '',
-            resolution: '',
-            fps: '',
-            notes: '',
-          ));
+          result.add(
+            ChannelLink(
+              name: name,
+              url: line.trim(),
+              logo: logo ?? '',
+              resolution: '',
+              fps: '',
+              notes: const [],
+            ),
+          );
           name = null;
           logo = null;
         }
@@ -101,7 +103,7 @@ List<ChannelLink> _searchFileSync(_SearchArgs args) {
           logo: logo ?? '',
           resolution: '',
           fps: '',
-          notes: '',
+          notes: const [],
         );
         if (lowerQuery.isEmpty ||
             link.name.toLowerCase().contains(lowerQuery)) {
