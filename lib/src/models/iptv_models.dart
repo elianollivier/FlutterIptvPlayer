@@ -40,16 +40,34 @@ class ChannelLink {
     this.notes = const [],
   });
 
-  factory ChannelLink.fromJson(Map<String, dynamic> json) => ChannelLink(
-        name: json['name'] as String,
-        url: json['url'] as String,
-        logo: json['logo'] as String? ?? '',
-        resolution: json['resolution'] as String? ?? '',
-        fps: json['fps'] as String? ?? '',
-        notes: (json['notes'] as List<dynamic>? ?? [])
-            .map((e) => Note.fromJson(e as Map<String, dynamic>))
-            .toList(),
-      );
+  factory ChannelLink.fromJson(Map<String, dynamic> json) {
+    final rawNotes = json['notes'];
+    List<Note> notes = [];
+    if (rawNotes is List) {
+      notes = rawNotes
+          .map((e) {
+            if (e is Map<String, dynamic>) {
+              return Note.fromJson(e);
+            } else if (e is String) {
+              return Note(text: e, date: DateTime.now());
+            } else {
+              return Note(text: e.toString(), date: DateTime.now());
+            }
+          })
+          .toList();
+    } else if (rawNotes is String && rawNotes.isNotEmpty) {
+      notes = [Note(text: rawNotes, date: DateTime.now())];
+    }
+
+    return ChannelLink(
+      name: json['name'] as String,
+      url: json['url'] as String,
+      logo: json['logo'] as String? ?? '',
+      resolution: json['resolution'] as String? ?? '',
+      fps: json['fps'] as String? ?? '',
+      notes: notes,
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         'name': name,
