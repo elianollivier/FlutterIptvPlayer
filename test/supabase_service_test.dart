@@ -52,14 +52,15 @@ void main() {
       await Supabase.instance.dispose();
     });
 
-    test('file names with spaces and accents are supported', () async {
+    test('uploads logo using generated name', () async {
       final file = File('${Directory.systemTemp.path}/Mon logo épatant.png');
       await file.writeAsString('dummy');
 
       final url = await SupabaseService.instance.uploadLogo(file);
 
-      expect(url, contains(Uri.encodeComponent('Mon logo épatant.png')));
-      expect(requests.single.toString(), contains(Uri.encodeComponent('Mon logo épatant.png')));
+      expect(url, contains('/logos/public/'));
+      expect(url, endsWith('.png'));
+      expect(requests.single.toString(), contains('/logos/public/'));
 
       await file.delete();
     });

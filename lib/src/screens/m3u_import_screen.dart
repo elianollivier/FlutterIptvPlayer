@@ -31,6 +31,7 @@ class _M3uImportScreenState extends State<M3uImportScreen> {
   late final Set<String> _existingUrls;
   bool _loading = true;
   String _query = '';
+  int _searchId = 0;
 
   bool _isDownloadable(ChannelLink link) {
     final url = link.url.toLowerCase();
@@ -70,6 +71,7 @@ class _M3uImportScreenState extends State<M3uImportScreen> {
   }
 
   Future<void> _search() async {
+    final int current = ++_searchId;
     if (!mounted) return;
     setState(() => _loading = true);
     final list = await _service.searchFile(
@@ -77,7 +79,7 @@ class _M3uImportScreenState extends State<M3uImportScreen> {
       query: _query,
       limit: 150,
     );
-    if (!mounted) return;
+    if (!mounted || current != _searchId) return;
     setState(() {
       _links = list;
       _loading = false;
