@@ -54,8 +54,8 @@ class SupabaseService {
     final data = await client
         .from('items')
         .select()
-        .order('parentId')
-        .order('position') as List<dynamic>;
+        .order('parentId', ascending: true)
+        .order('position', ascending: true) as List<dynamic>;
     return data
         .map((e) => IptvItem.fromJson(e as Map<String, dynamic>))
         .toList();
