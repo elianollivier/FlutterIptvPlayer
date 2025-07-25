@@ -59,11 +59,15 @@ class ChannelLink {
       notes = [Note(text: rawNotes, date: DateTime.now())];
     }
 
+    var resolution = json['resolution'] as String? ?? '';
+    if (resolution == '560p') {
+      resolution = '540p';
+    }
     return ChannelLink(
       name: json['name'] as String,
       url: json['url'] as String,
       logo: json['logo'] as String? ?? '',
-      resolution: json['resolution'] as String? ?? '',
+      resolution: resolution,
       fps: json['fps'] as String? ?? '',
       notes: notes,
     );

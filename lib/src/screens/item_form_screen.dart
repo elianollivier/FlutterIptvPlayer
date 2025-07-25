@@ -189,13 +189,12 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
             .toList();
 
     const resolutions = [
-      '240p',
-      '360p',
-      '480p',
-      '560p',
-      'HD',
-      'FHD',
       '4K',
+      'FHD',
+      'HD',
+      '540p',
+      '480p',
+      '240p',
     ];
 
     final result = await showDialog<ChannelLink>(
@@ -271,8 +270,8 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                                 }
                               },
                               child: Text(
-                                DateFormat.yMd().format(
-                                    notesData[i]['date'] as DateTime),
+                                DateFormat.yMd('fr_FR')
+                                    .format(notesData[i]['date'] as DateTime),
                               ),
                             ),
                             IconButton(
@@ -516,7 +515,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                                   Text(link.url),
                                   ...link.notes.map(
                                     (n) => Text(
-                                      '${DateFormat.yMd().format(n.date)} - ${n.text}',
+                                      '${DateFormat.yMd('fr_FR').format(n.date)} - ${n.text}',
                                       style: const TextStyle(
                                         fontStyle: FontStyle.italic,
                                         color: Colors.grey,

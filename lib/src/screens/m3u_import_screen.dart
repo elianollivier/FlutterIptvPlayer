@@ -102,7 +102,9 @@ class _M3uImportScreenState extends State<M3uImportScreen> {
                   child: TextField(
                     controller: _queryCtrl,
                     decoration: const InputDecoration(labelText: 'Rechercher'),
+                    textInputAction: TextInputAction.search,
                     onChanged: (v) => setState(() => _query = v),
+                    onSubmitted: (_) => _search(),
                   ),
                 ),
                 const SizedBox(width: 8),

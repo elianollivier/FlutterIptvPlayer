@@ -58,7 +58,9 @@ class _SeriesListScreenState extends State<SeriesListScreen> {
                   child: TextField(
                     controller: _queryCtrl,
                     decoration: const InputDecoration(labelText: 'Rechercher'),
+                    textInputAction: TextInputAction.search,
                     onChanged: (v) => setState(() => _query = v),
+                    onSubmitted: (_) => _load(),
                   ),
                 ),
                 const SizedBox(width: 8),
