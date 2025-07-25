@@ -111,34 +111,38 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
         child: Stack(
           children: [
             Center(
-              child: widget.item.logoPath != null
-                  ? Image.network(
-                      widget.item.logoPath!,
-                      fit: BoxFit.contain,
-                      errorBuilder: (_, __, ___) => Icon(
-                        widget.item.type == IptvItemType.folder
-                            ? Icons.folder
-                            : Icons.tv,
-                        size: 48,
-                      ),
-                    )
-                  : widget.item.logoUrl != null
-                      ? Image.network(
-                          widget.item.logoUrl!,
-                          fit: BoxFit.contain,
-                          errorBuilder: (_, __, ___) => Icon(
-                            widget.item.type == IptvItemType.folder
-                                ? Icons.folder
-                                : Icons.tv,
-                            size: 48,
-                          ),
-                        )
-                      : Icon(
+              child: FractionallySizedBox(
+                widthFactor: 0.95,
+                heightFactor: 0.95,
+                child: widget.item.logoPath != null
+                    ? Image.network(
+                        widget.item.logoPath!,
+                        fit: BoxFit.contain,
+                        errorBuilder: (_, __, ___) => Icon(
                           widget.item.type == IptvItemType.folder
                               ? Icons.folder
                               : Icons.tv,
                           size: 48,
                         ),
+                      )
+                    : widget.item.logoUrl != null
+                        ? Image.network(
+                            widget.item.logoUrl!,
+                            fit: BoxFit.contain,
+                            errorBuilder: (_, __, ___) => Icon(
+                              widget.item.type == IptvItemType.folder
+                                  ? Icons.folder
+                                  : Icons.tv,
+                              size: 48,
+                            ),
+                          )
+                        : Icon(
+                            widget.item.type == IptvItemType.folder
+                                ? Icons.folder
+                                : Icons.tv,
+                            size: 48,
+                          ),
+              ),
             ),
             previewWidget,
             if (_shouldShowViewed)
