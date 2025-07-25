@@ -155,7 +155,7 @@ class _PlaylistFormScreenState extends State<PlaylistFormScreen> {
                   padding: const EdgeInsets.only(top: 8),
                   child: Text(
                     'Dernier téléchargement : '
-                    '${DateFormat.yMd().add_Hm().format(_lastDownload!)}',
+                    '${DateFormat.yMd('fr_FR').add_Hm().format(_lastDownload!)}',
                   ),
                 ),
               if (_downloading)
