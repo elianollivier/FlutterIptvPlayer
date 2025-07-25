@@ -43,12 +43,16 @@ class _PlaylistCardState extends State<PlaylistCard> {
         child: Stack(
           children: [
             Center(
-              child: widget.playlist.logoPath != null
-                  ? Image.network(
-                      widget.playlist.logoPath!,
-                      fit: BoxFit.contain,
-                    )
-                  : const Icon(Icons.playlist_play, size: 48),
+              child: FractionallySizedBox(
+                widthFactor: 0.95,
+                heightFactor: 0.95,
+                child: widget.playlist.logoPath != null
+                    ? Image.network(
+                        widget.playlist.logoPath!,
+                        fit: BoxFit.contain,
+                      )
+                    : const Icon(Icons.playlist_play, size: 48),
+              ),
             ),
             Positioned(
               top: 4,
