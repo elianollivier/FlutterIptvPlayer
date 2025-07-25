@@ -96,24 +96,20 @@ class _M3uImportScreenState extends State<M3uImportScreen> {
         children: [
           Padding(
             padding: const EdgeInsets.all(8),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _queryCtrl,
-                    decoration: const InputDecoration(labelText: 'Rechercher'),
-                    textInputAction: TextInputAction.search,
-                    onChanged: (v) => setState(() => _query = v),
-                    onSubmitted: (_) => _search(),
-                  ),
+            child: TextField(
+              controller: _queryCtrl,
+              decoration: InputDecoration(
+                hintText: 'Rechercher',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                const SizedBox(width: 8),
-                ElevatedButton.icon(
-                  onPressed: _search,
-                  icon: const Icon(Icons.search),
-                  label: const Text('Rechercher'),
-                ),
-              ],
+                filled: true,
+                fillColor: Theme.of(context).colorScheme.surfaceVariant,
+              ),
+              textInputAction: TextInputAction.search,
+              onChanged: (v) => setState(() => _query = v),
+              onSubmitted: (_) => _search(),
             ),
           ),
           if (_loading) const LinearProgressIndicator(),

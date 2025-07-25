@@ -180,9 +180,9 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
     final fpsCtrl = TextEditingController(
       text: fpsValue != null ? '$fpsValue' : '',
     );
-    final List<Map<String, dynamic>> notesData =
+    final List<Map<String, Object>> notesData =
         (link?.notes ?? [])
-            .map((n) => {
+            .map((n) => <String, Object>{
                   'ctrl': TextEditingController(text: n.text),
                   'date': n.date,
                 })
@@ -285,7 +285,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                     TextButton.icon(
                       onPressed: () {
                         setState(() {
-                          notesData.add({
+                          notesData.add(<String, Object>{
                             'ctrl': TextEditingController(),
                             'date': DateTime.now(),
                           });
