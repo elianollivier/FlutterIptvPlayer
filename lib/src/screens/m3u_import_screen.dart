@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:logger/logger.dart';
 import '../services/download_service.dart';
 
@@ -125,11 +126,11 @@ class _M3uImportScreenState extends State<M3uImportScreen> {
                   enabled: !isExisting,
                   minVerticalPadding: 8,
                   leading: link.logo.isNotEmpty
-                      ? Image.network(
-                          link.logo,
+                      ? CachedNetworkImage(
+                          imageUrl: link.logo,
                           width: 64,
                           height: 64,
-                          errorBuilder: (_, __, ___) =>
+                          errorWidget: (_, __, ___) =>
                               const Icon(Icons.image_not_supported),
                         )
                       : const Icon(Icons.image_not_supported),

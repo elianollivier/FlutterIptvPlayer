@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import 'link_label.dart';
 import '../models/iptv_models.dart';
@@ -115,10 +116,10 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
                 widthFactor: 0.95,
                 heightFactor: 0.95,
                 child: widget.item.logoPath != null
-                    ? Image.network(
-                        widget.item.logoPath!,
+                    ? CachedNetworkImage(
+                        imageUrl: widget.item.logoPath!,
                         fit: BoxFit.contain,
-                        errorBuilder: (_, __, ___) => Icon(
+                        errorWidget: (_, __, ___) => Icon(
                           widget.item.type == IptvItemType.folder
                               ? Icons.folder
                               : Icons.tv,
@@ -126,10 +127,10 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
                         ),
                       )
                     : widget.item.logoUrl != null
-                        ? Image.network(
-                            widget.item.logoUrl!,
+                        ? CachedNetworkImage(
+                            imageUrl: widget.item.logoUrl!,
                             fit: BoxFit.contain,
-                            errorBuilder: (_, __, ___) => Icon(
+                            errorWidget: (_, __, ___) => Icon(
                               widget.item.type == IptvItemType.folder
                                   ? Icons.folder
                                   : Icons.tv,
