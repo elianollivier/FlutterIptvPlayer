@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+import 'package:path/path.dart' as p;
 
 import 'package:flutter_iptv_player/src/services/logo_service.dart';
 
@@ -22,10 +23,10 @@ void main() {
 
   test('listLogos reads local directory when present', () async {
     final service = LogoService();
-    final dir = Directory(
-        '${(await getApplicationDocumentsDirectory()).path}/logos');
+    final dir =
+        Directory(p.join((await getApplicationDocumentsDirectory()).path, 'logos'));
     await dir.create(recursive: true);
-    final file = File('${dir.path}/logo.png');
+    final file = File(p.join(dir.path, 'logo.png'));
     await file.writeAsString('test');
 
     final logos = await service.listLogos();
