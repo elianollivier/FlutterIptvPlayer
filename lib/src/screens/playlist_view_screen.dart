@@ -95,6 +95,7 @@ class _PlaylistViewScreenState extends State<PlaylistViewScreen> {
                           imageUrl: link.logo,
                           width: 64,
                           height: 64,
+                          filterQuality: FilterQuality.high,
                           errorWidget: (_, __, ___) =>
                               const Icon(Icons.image_not_supported),
                         )

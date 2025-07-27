@@ -128,7 +128,11 @@ class _LogoTileState extends State<_LogoTile> {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                CachedNetworkImage(imageUrl: widget.url, fit: BoxFit.contain),
+                CachedNetworkImage(
+                  imageUrl: widget.url,
+                  fit: BoxFit.contain,
+                  filterQuality: FilterQuality.high,
+                ),
                 AnimatedOpacity(
                   duration: const Duration(milliseconds: 200),
                   opacity: _hovered ? 0.2 : 0,

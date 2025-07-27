@@ -51,6 +51,7 @@ class _PlaylistCardState extends State<PlaylistCard> {
                     ? CachedNetworkImage(
                         imageUrl: widget.playlist.logoPath!,
                         fit: BoxFit.contain,
+                        filterQuality: FilterQuality.high,
                         errorWidget: (_, __, ___) =>
                             const Icon(Icons.playlist_play, size: 48),
                       )
