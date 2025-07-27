@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import '../services/logo_service.dart';
 
@@ -127,7 +128,7 @@ class _LogoTileState extends State<_LogoTile> {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                Image.network(widget.url, fit: BoxFit.contain),
+                CachedNetworkImage(imageUrl: widget.url, fit: BoxFit.contain),
                 AnimatedOpacity(
                   duration: const Duration(milliseconds: 200),
                   opacity: _hovered ? 0.2 : 0,

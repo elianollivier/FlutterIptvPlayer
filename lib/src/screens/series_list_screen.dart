@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import '../models/m3u_series.dart';
 import '../services/m3u_service.dart';
@@ -81,11 +82,11 @@ class _SeriesListScreenState extends State<SeriesListScreen> {
                 return ListTile(
                   minVerticalPadding: 8,
                   leading: serie.logo.isNotEmpty
-                      ? Image.network(
-                          serie.logo,
+                      ? CachedNetworkImage(
+                          imageUrl: serie.logo,
                           width: 64,
                           height: 64,
-                          errorBuilder: (_, __, ___) =>
+                          errorWidget: (_, __, ___) =>
                               const Icon(Icons.image_not_supported),
                         )
                       : const Icon(Icons.image_not_supported),

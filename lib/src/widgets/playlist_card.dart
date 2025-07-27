@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import '../models/m3u_playlist.dart';
 
@@ -47,9 +48,11 @@ class _PlaylistCardState extends State<PlaylistCard> {
                 widthFactor: 0.95,
                 heightFactor: 0.95,
                 child: widget.playlist.logoPath != null
-                    ? Image.network(
-                        widget.playlist.logoPath!,
+                    ? CachedNetworkImage(
+                        imageUrl: widget.playlist.logoPath!,
                         fit: BoxFit.contain,
+                        errorWidget: (_, __, ___) =>
+                            const Icon(Icons.playlist_play, size: 48),
                       )
                     : const Icon(Icons.playlist_play, size: 48),
               ),
