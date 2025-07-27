@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import '../widgets/logo_image.dart';
 import 'package:logger/logger.dart';
 
 import '../models/iptv_models.dart';
@@ -91,12 +91,11 @@ class _PlaylistViewScreenState extends State<PlaylistViewScreen> {
                 return ListTile(
                   minVerticalPadding: 8,
                   leading: link.logo.isNotEmpty
-                      ? CachedNetworkImage(
-                          imageUrl: link.logo,
+                      ? LogoImage(
+                          path: link.logo,
                           width: 64,
                           height: 64,
-                          filterQuality: FilterQuality.high,
-                          errorWidget: (_, __, ___) =>
+                          errorWidget:
                               const Icon(Icons.image_not_supported),
                         )
                       : const Icon(Icons.image_not_supported),
