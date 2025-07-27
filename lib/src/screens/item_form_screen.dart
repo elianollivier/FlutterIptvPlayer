@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
 import 'package:uuid/uuid.dart';
 import 'package:intl/intl.dart';
+import 'package:path/path.dart' as p;
 
 import 'm3u_import_screen.dart';
 import 'playlist_list_screen.dart';
@@ -17,6 +18,7 @@ import '../widgets/logo_picker_dialog.dart';
 import '../models/iptv_models.dart';
 import '../services/download_service.dart';
 import '../services/settings_service.dart';
+import '../services/supabase_service.dart';
 import '../models/m3u_series.dart';
 
 class ItemFormScreen extends StatefulWidget {
@@ -166,8 +168,9 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
     );
     if (result != null) {
       setState(() {
-        _logoPath = null;
-        _logoUrl = result;
+        _logoPath = result;
+        final name = p.basename(result);
+        _logoUrl = SupabaseService.instance.logoUrlFromName(name);
       });
     }
   }
