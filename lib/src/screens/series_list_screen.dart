@@ -86,6 +86,7 @@ class _SeriesListScreenState extends State<SeriesListScreen> {
                           imageUrl: serie.logo,
                           width: 64,
                           height: 64,
+                          filterQuality: FilterQuality.high,
                           errorWidget: (_, __, ___) =>
                               const Icon(Icons.image_not_supported),
                         )

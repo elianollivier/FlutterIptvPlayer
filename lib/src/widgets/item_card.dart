@@ -119,6 +119,7 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
                     ? CachedNetworkImage(
                         imageUrl: widget.item.logoPath!,
                         fit: BoxFit.contain,
+                        filterQuality: FilterQuality.high,
                         errorWidget: (_, __, ___) => Icon(
                           widget.item.type == IptvItemType.folder
                               ? Icons.folder
@@ -130,6 +131,7 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
                         ? CachedNetworkImage(
                             imageUrl: widget.item.logoUrl!,
                             fit: BoxFit.contain,
+                            filterQuality: FilterQuality.high,
                             errorWidget: (_, __, ___) => Icon(
                               widget.item.type == IptvItemType.folder
                                   ? Icons.folder

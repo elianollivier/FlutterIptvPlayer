@@ -131,6 +131,7 @@ class _M3uImportScreenState extends State<M3uImportScreen> {
                           imageUrl: link.logo,
                           width: 64,
                           height: 64,
+                          filterQuality: FilterQuality.high,
                           errorWidget: (_, __, ___) =>
                               const Icon(Icons.image_not_supported),
                         )
