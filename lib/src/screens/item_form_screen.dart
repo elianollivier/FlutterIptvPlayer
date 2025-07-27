@@ -261,6 +261,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                               onPressed: () async {
                                 final picked = await showDatePicker(
                                   context: context,
+                                  locale: const Locale('fr', 'FR'),
                                   initialDate: notesData[i]['date'] as DateTime,
                                   firstDate: DateTime(2000),
                                   lastDate: DateTime(2100),

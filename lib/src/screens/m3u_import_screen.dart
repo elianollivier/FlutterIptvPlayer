@@ -27,7 +27,7 @@ class _M3uImportScreenState extends State<M3uImportScreen> {
   final Logger _logger = Logger();
   late TextEditingController _queryCtrl;
   List<ChannelLink> _links = [];
-  final Set<ChannelLink> _selected = {};
+  final Map<String, ChannelLink> _selected = {};
   late final Set<String> _existingUrls;
   bool _loading = true;
   String _query = '';
@@ -98,6 +98,7 @@ class _M3uImportScreenState extends State<M3uImportScreen> {
             padding: const EdgeInsets.all(8),
             child: TextField(
               controller: _queryCtrl,
+              autofocus: true,
               decoration: InputDecoration(
                 hintText: 'Rechercher',
                 prefixIcon: const Icon(Icons.search),
@@ -120,7 +121,7 @@ class _M3uImportScreenState extends State<M3uImportScreen> {
                 final link = _links[index];
                 final isExisting =
                     _existingUrls.contains(link.url.toLowerCase());
-                final selected = _selected.contains(link);
+                final selected = _selected.containsKey(link.url);
                 return ListTile(
                   enabled: !isExisting,
                   minVerticalPadding: 8,
@@ -149,9 +150,9 @@ class _M3uImportScreenState extends State<M3uImportScreen> {
                           onChanged: (_) {
                             setState(() {
                               if (selected) {
-                                _selected.remove(link);
+                                _selected.remove(link.url);
                               } else {
-                                _selected.add(link);
+                                _selected[link.url] = link;
                               }
                             });
                           },
@@ -178,7 +179,7 @@ class _M3uImportScreenState extends State<M3uImportScreen> {
               onPressed: _selected.isEmpty
                   ? null
                   : () {
-                      Navigator.pop(context, _selected.toList());
+                      Navigator.pop(context, _selected.values.toList());
                     },
               child: const Text('Ajouter la sélection'),
             ),
