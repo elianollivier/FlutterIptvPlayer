@@ -115,8 +115,8 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
                 widthFactor: 0.95,
                 heightFactor: 0.95,
                 child: widget.item.logoPath != null
-                    ? Image.network(
-                        widget.item.logoPath!,
+                    ? Image.file(
+                        File(widget.item.logoPath!),
                         fit: BoxFit.contain,
                         errorBuilder: (_, __, ___) => Icon(
                           widget.item.type == IptvItemType.folder

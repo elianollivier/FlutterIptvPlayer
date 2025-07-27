@@ -28,8 +28,8 @@ class _LogoPickerDialogState extends State<LogoPickerDialog> {
   }
 
   Future<void> _import() async {
-    final url = await _service.importLogo();
-    if (url != null) {
+    final path = await _service.importLogo();
+    if (path != null) {
       await _load();
       if (!mounted) return;
       setState(() {});
@@ -72,14 +72,14 @@ class _LogoPickerDialogState extends State<LogoPickerDialog> {
                   if (index == 0) {
                     return _AddLogoTile(onAdd: _import);
                   }
-                  final url = _logos[index - 1];
+                  final path = _logos[index - 1];
                   return _LogoTile(
-                    url: url,
+                    path: path,
                     onDelete: () async {
-                      await _service.deleteLogo(url);
+                      await _service.deleteLogo(path);
                       await _load();
                     },
-                    onSelect: () => Navigator.pop(context, url),
+                    onSelect: () => Navigator.pop(context, path),
                   );
                 },
               ),
@@ -92,9 +92,9 @@ class _LogoPickerDialogState extends State<LogoPickerDialog> {
 }
 
 class _LogoTile extends StatefulWidget {
-  const _LogoTile({required this.url, required this.onDelete, required this.onSelect});
+  const _LogoTile({required this.path, required this.onDelete, required this.onSelect});
 
-  final String url;
+  final String path;
   final VoidCallback onDelete;
   final VoidCallback onSelect;
 
@@ -127,7 +127,7 @@ class _LogoTileState extends State<_LogoTile> {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                Image.network(widget.url, fit: BoxFit.contain),
+                Image.file(File(widget.path), fit: BoxFit.contain),
                 AnimatedOpacity(
                   duration: const Duration(milliseconds: 200),
                   opacity: _hovered ? 0.2 : 0,

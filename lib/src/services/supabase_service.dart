@@ -8,6 +8,7 @@ import 'package:uuid/uuid.dart';
 
 import '../models/iptv_models.dart';
 import '../models/m3u_playlist.dart';
+import '../constants.dart';
 
 class SupabaseService {
   SupabaseService._();
@@ -157,5 +158,13 @@ class SupabaseService {
     } catch (e) {
       _logger.e('Delete logo failed', error: e);
     }
+  }
+
+  String logoUrlFromName(String name) {
+    final client = _maybeClient;
+    if (client != null) {
+      return client.storage.from('logos').getPublicUrl('public/$name');
+    }
+    return '${Constants.supabaseUrl}/storage/v1/object/public/logos/public/$name';
   }
 }
