@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'link_label.dart';
 import '../models/iptv_models.dart';
+import '../services/logo_service.dart';
 
 class ItemCard extends StatefulWidget {
   const ItemCard({
@@ -33,11 +34,36 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
   int? _hoveredIndex;
   Timer? _hoverTimer;
   late final ScrollController _scrollCtrl;
+  String? _localLogo;
 
   @override
   void initState() {
     super.initState();
     _scrollCtrl = ScrollController();
+    _loadLogo();
+  }
+
+  @override
+  void didUpdateWidget(covariant ItemCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.item.logoUrl != widget.item.logoUrl ||
+        oldWidget.item.logoPath != widget.item.logoPath) {
+      _loadLogo();
+    }
+  }
+
+  Future<void> _loadLogo() async {
+    if (widget.item.logoPath != null) {
+      setState(() => _localLogo = widget.item.logoPath);
+      return;
+    }
+    if (widget.item.logoUrl != null) {
+      final path = await LogoService().localPathFromUrl(widget.item.logoUrl!);
+      if (!mounted) return;
+      setState(() => _localLogo = path);
+    } else {
+      setState(() => _localLogo = null);
+    }
   }
 
   @override
@@ -114,34 +140,29 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
               child: FractionallySizedBox(
                 widthFactor: 0.95,
                 heightFactor: 0.95,
-                child: widget.item.logoPath != null
-                    ? Image.file(
-                        File(widget.item.logoPath!),
-                        fit: BoxFit.contain,
-                        errorBuilder: (_, __, ___) => Icon(
-                          widget.item.type == IptvItemType.folder
-                              ? Icons.folder
-                              : Icons.tv,
-                          size: 48,
-                        ),
-                      )
-                    : widget.item.logoUrl != null
-                        ? Image.network(
-                            widget.item.logoUrl!,
-                            fit: BoxFit.contain,
-                            errorBuilder: (_, __, ___) => Icon(
-                              widget.item.type == IptvItemType.folder
-                                  ? Icons.folder
-                                  : Icons.tv,
-                              size: 48,
-                            ),
-                          )
-                        : Icon(
-                            widget.item.type == IptvItemType.folder
-                                ? Icons.folder
-                                : Icons.tv,
-                            size: 48,
-                          ),
+                child: () {
+                  final icon = Icon(
+                    widget.item.type == IptvItemType.folder
+                        ? Icons.folder
+                        : Icons.tv,
+                    size: 48,
+                  );
+                  if (_localLogo != null) {
+                    return Image.file(
+                      File(_localLogo!),
+                      fit: BoxFit.contain,
+                      errorBuilder: (_, __, ___) => icon,
+                    );
+                  }
+                  if (widget.item.logoUrl != null) {
+                    return Image.network(
+                      widget.item.logoUrl!,
+                      fit: BoxFit.contain,
+                      errorBuilder: (_, __, ___) => icon,
+                    );
+                  }
+                  return icon;
+                }(),
               ),
             ),
             previewWidget,

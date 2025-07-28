@@ -28,8 +28,8 @@ class _LogoPickerDialogState extends State<LogoPickerDialog> {
   }
 
   Future<void> _import() async {
-    final path = await _service.importLogo();
-    if (path != null) {
+    final url = await _service.importLogo();
+    if (url != null) {
       await _load();
       if (!mounted) return;
       setState(() {});

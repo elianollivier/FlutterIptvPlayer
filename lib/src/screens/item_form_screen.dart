@@ -168,9 +168,9 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
     );
     if (result != null) {
       setState(() {
-        _logoPath = result;
         final name = p.basename(result);
         _logoUrl = SupabaseService.instance.logoUrlFromName(name);
+        _logoPath = null;
       });
     }
   }
