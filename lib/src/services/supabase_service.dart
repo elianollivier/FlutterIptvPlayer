@@ -66,11 +66,11 @@ class SupabaseService {
     try {
       final client = _maybeClient;
       if (client != null) {
-        await client.from('items').upsert(items.map((e) {
-          final data = e.toJson();
-          data['logoPath'] = null;
-          return data;
-        }).toList());
+        await client.from('items').upsert(
+          items
+              .map((e) => e.toJson()..remove('logoPath'))
+              .toList(),
+        );
       }
     } catch (e) {
       _logger.e('Save items failed', error: e);
