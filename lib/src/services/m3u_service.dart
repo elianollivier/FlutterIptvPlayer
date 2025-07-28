@@ -50,7 +50,7 @@ class M3uService {
   Future<List<ChannelLink>> searchFile(
     String path, {
     String query = '',
-    int limit = 150,
+    int limit = 300,
   }) async {
     return compute(
       _searchFileSync,

@@ -59,30 +59,34 @@ class _LogoPickerDialogState extends State<LogoPickerDialog> {
             ),
           ),
           Expanded(
-            child: SizedBox(
-              width: double.maxFinite,
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 4,
-                  crossAxisSpacing: 4,
-                  mainAxisSpacing: 4,
-                ),
-                itemCount: _logos.length + 1,
-                itemBuilder: (context, index) {
-                  if (index == 0) {
-                    return _AddLogoTile(onAdd: _import);
-                  }
-                  final path = _logos[index - 1];
-                  return _LogoTile(
-                    path: path,
-                    onDelete: () async {
-                      await _service.deleteLogo(path);
-                      await _load();
-                    },
-                    onSelect: () => Navigator.pop(context, path),
-                  );
-                },
-              ),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final count =
+                    (constraints.maxWidth / 100).round().clamp(3, 8).toInt();
+                return GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: count,
+                    crossAxisSpacing: 4,
+                    mainAxisSpacing: 4,
+                    childAspectRatio: 1,
+                  ),
+                  itemCount: _logos.length + 1,
+                  itemBuilder: (context, index) {
+                    if (index == 0) {
+                      return _AddLogoTile(onAdd: _import);
+                    }
+                    final path = _logos[index - 1];
+                    return _LogoTile(
+                      path: path,
+                      onDelete: () async {
+                        await _service.deleteLogo(path);
+                        await _load();
+                      },
+                      onSelect: () => Navigator.pop(context, path),
+                    );
+                  },
+                );
+              },
             ),
           ),
         ],

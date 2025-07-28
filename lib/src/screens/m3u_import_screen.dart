@@ -77,7 +77,7 @@ class _M3uImportScreenState extends State<M3uImportScreen> {
     final list = await _service.searchFile(
       widget.path,
       query: _query,
-      limit: 150,
+      limit: 300,
     );
     if (!mounted || current != _searchId) return;
     setState(() {
