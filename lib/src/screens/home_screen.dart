@@ -15,6 +15,12 @@ import 'item_form_screen.dart';
 import 'playlist_list_screen.dart';
 import 'package:reorderables/reorderables.dart';
 
+class _Crumb {
+  final String? id;
+  final String name;
+  const _Crumb(this.id, this.name);
+}
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, this.parentId});
 
@@ -229,20 +235,78 @@ class _HomeScreenState extends State<HomeScreen> {
     await _storage.saveItems(_allItems);
   }
 
+  IptvItem? _findItem(String id) {
+    for (final item in _allItems) {
+      if (item.id == id) return item;
+    }
+    return null;
+  }
+
+  List<_Crumb> _breadcrumb() {
+    final List<_Crumb> res = [const _Crumb(null, 'Dossier Central')];
+    String? current = widget.parentId;
+    final List<_Crumb> stack = [];
+    while (current != null) {
+      final item = _findItem(current);
+      if (item == null) break;
+      stack.add(_Crumb(item.id, item.name));
+      current = item.parentId;
+    }
+    res.addAll(stack.reversed);
+    return res;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final String title;
-    if (widget.parentId == null) {
-      title = 'Dossier Central';
-    } else {
-      final parent = _allItems.any((e) => e.id == widget.parentId)
-          ? _allItems.firstWhere((e) => e.id == widget.parentId)
-          : null;
-      title = parent?.name ?? 'Dossier';
-    }
+    final crumbs = _breadcrumb();
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        automaticallyImplyLeading: false,
+        titleSpacing: 0,
+        title: Row(
+          children: [
+            if (widget.parentId != null)
+              IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => Navigator.pop(context),
+              ),
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    for (int i = 0; i < crumbs.length; i++) ...[
+                      InkWell(
+                        onTap: i == crumbs.length - 1
+                            ? null
+                            : () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        HomeScreen(parentId: crumbs[i].id),
+                                  ),
+                                );
+                              },
+                        child: Text(
+                          crumbs[i].name,
+                          style: TextStyle(
+                            color: i == crumbs.length - 1
+                                ? Theme.of(context).colorScheme.onSurface
+                                : Theme.of(context).colorScheme.primary,
+                            fontWeight:
+                                i == crumbs.length - 1 ? FontWeight.bold : null,
+                          ),
+                        ),
+                      ),
+                      if (i < crumbs.length - 1) const Text(' / '),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.playlist_play),

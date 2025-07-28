@@ -39,17 +39,17 @@ void main() {
     await file.delete();
   });
 
-  test('searchFile uses default limit of 150', () async {
+  test('searchFile uses default limit of 300', () async {
     final file = File('${Directory.systemTemp.path}/sample_limit.m3u');
     final buffer = StringBuffer('#EXTM3U\n');
-    for (var i = 0; i < 200; i++) {
+    for (var i = 0; i < 400; i++) {
       buffer.writeln('#EXTINF:-1 tvg-logo="$i.png",Channel $i');
       buffer.writeln('http://example.com/$i');
     }
     await file.writeAsString(buffer.toString());
     final service = const M3uService();
     final result = await service.searchFile(file.path);
-    expect(result.length, 150);
+    expect(result.length, 300);
     await file.delete();
   });
 }
