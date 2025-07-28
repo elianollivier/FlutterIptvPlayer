@@ -6,7 +6,6 @@ import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:uuid/uuid.dart';
 
 import 'supabase_service.dart';
 
@@ -31,6 +30,12 @@ class LogoService {
         .toList();
     files.sort();
     return files;
+  }
+
+  Future<String?> localPathFromUrl(String url) async {
+    final dir = await _getDir();
+    final path = p.join(dir.path, p.basename(url));
+    return File(path).existsSync() ? path : null;
   }
 
   Future<void> syncWithSupabase() async {
@@ -74,12 +79,11 @@ class LogoService {
     final result = await FilePicker.platform.pickFiles(type: FileType.image);
     if (result != null && result.files.single.path != null) {
       final src = File(result.files.single.path!);
-      final dir = await _getDir();
-      final ext = p.extension(src.path);
-      final name = '${const Uuid().v4()}$ext';
-      final dest = await src.copy('${dir.path}/$name');
-      await SupabaseService.instance.uploadLogo(dest);
-      return dest.path;
+      final url = await SupabaseService.instance.uploadLogo(src);
+      if (url != null) {
+        await syncWithSupabase();
+      }
+      return url;
     }
     return null;
   }
