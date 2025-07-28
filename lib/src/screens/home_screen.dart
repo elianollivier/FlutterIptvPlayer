@@ -9,6 +9,7 @@ import '../models/iptv_models.dart';
 import '../services/storage_service.dart';
 import '../services/settings_service.dart';
 import '../services/supabase_service.dart';
+import '../services/logo_service.dart';
 import '../widgets/item_card.dart';
 import 'item_form_screen.dart';
 import 'playlist_list_screen.dart';
@@ -41,7 +42,14 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    if (widget.parentId == null && SupabaseService.instance.isLoggedIn) {
+      _syncLogos();
+    }
     _load();
+  }
+
+  Future<void> _syncLogos() async {
+    await LogoService().syncWithSupabase();
   }
 
   Future<void> _load() async {

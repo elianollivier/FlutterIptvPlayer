@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../services/supabase_service.dart';
+import '../services/logo_service.dart';
 import 'home_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -25,6 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       await SupabaseService.instance
           .signIn(_emailCtrl.text, _passwordCtrl.text);
+      await LogoService().syncWithSupabase();
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
@@ -47,6 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       await SupabaseService.instance
           .signUp(_emailCtrl.text, _passwordCtrl.text);
+      await LogoService().syncWithSupabase();
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
