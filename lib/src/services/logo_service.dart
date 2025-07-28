@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:logger/logger.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
@@ -9,6 +11,8 @@ import 'package:uuid/uuid.dart';
 import 'supabase_service.dart';
 
 class LogoService {
+  final Logger _logger = Logger();
+
   Future<Directory> _getDir() async {
     final dir = await getApplicationDocumentsDirectory();
     final logos = Directory('${dir.path}/logos');
@@ -25,23 +29,45 @@ class LogoService {
         .where((e) => e is File)
         .map((e) => e.path)
         .toList();
-    if (files.isNotEmpty) {
-      files.sort();
-      return files;
-    }
-
-    final urls = await SupabaseService.instance.fetchLogos();
-    for (final url in urls) {
-      final resp = await http.get(Uri.parse(url));
-      if (resp.statusCode == 200) {
-        final name = p.basename(url);
-        final file = File('${dir.path}/$name');
-        await file.writeAsBytes(resp.bodyBytes);
-        files.add(file.path);
-      }
-    }
     files.sort();
     return files;
+  }
+
+  Future<void> syncWithSupabase() async {
+    final dir = await _getDir();
+    final urls = await SupabaseService.instance.fetchLogos();
+    final remoteNames = urls.map((e) => p.basename(e)).toSet();
+    final existingFiles = await dir
+        .list()
+        .where((e) => e is File)
+        .cast<File>()
+        .toList();
+
+    for (final file in existingFiles) {
+      if (!remoteNames.contains(p.basename(file.path))) {
+        try {
+          await file.delete();
+        } catch (e) {
+          _logger.e('Delete local logo failed', error: e);
+        }
+      }
+    }
+
+    final existingNames = existingFiles.map((f) => p.basename(f.path)).toSet();
+    for (final url in urls) {
+      final name = p.basename(url);
+      if (!existingNames.contains(name)) {
+        try {
+          final resp = await http.get(Uri.parse(url));
+          if (resp.statusCode == 200) {
+            final file = File('${dir.path}/$name');
+            await file.writeAsBytes(resp.bodyBytes);
+          }
+        } catch (e) {
+          _logger.e('Download logo failed', error: e);
+        }
+      }
+    }
   }
 
   Future<String?> importLogo() async {
