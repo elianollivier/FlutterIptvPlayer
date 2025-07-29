@@ -268,8 +268,14 @@ class _HomeScreenState extends State<HomeScreen> {
             if (widget.parentId != null)
               IconButton(
                 icon: const Icon(Icons.arrow_back),
-                onPressed: () => Navigator.pop(context),
-              ),
+                onPressed: () {
+                  if (Navigator.of(context).canPop()) {
+                    Navigator.pop(context);
+                  }
+                },
+              )
+            else
+              const SizedBox(width: kToolbarHeight),
             Expanded(
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -280,11 +286,22 @@ class _HomeScreenState extends State<HomeScreen> {
                         onTap: i == crumbs.length - 1
                             ? null
                             : () {
-                                Navigator.pushReplacement(
+                                Navigator.push(
                                   context,
-                                  MaterialPageRoute(
-                                    builder: (_) =>
+                                  PageRouteBuilder(
+                                    pageBuilder: (_, __, ___) =>
                                         HomeScreen(parentId: crumbs[i].id),
+                                    transitionsBuilder:
+                                        (_, animation, __, child) =>
+                                            SlideTransition(
+                                      position: Tween<Offset>(
+                                        begin: const Offset(-1, 0),
+                                        end: Offset.zero,
+                                      ).animate(animation),
+                                      child: child,
+                                    ),
+                                    transitionDuration:
+                                        const Duration(milliseconds: 300),
                                   ),
                                 );
                               },
@@ -294,8 +311,6 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: i == crumbs.length - 1
                                 ? Theme.of(context).colorScheme.onSurface
                                 : Theme.of(context).colorScheme.primary,
-                            fontWeight:
-                                i == crumbs.length - 1 ? FontWeight.bold : null,
                           ),
                         ),
                       ),
