@@ -22,9 +22,14 @@ class _Crumb {
 }
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, this.parentId});
+  const HomeScreen({
+    super.key,
+    this.parentId,
+    this.initialCrumbs,
+  });
 
   final String? parentId;
+  final List<_Crumb>? initialCrumbs;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -35,6 +40,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final Logger _logger = Logger();
   List<IptvItem> _allItems = [];
   String? _draggingId;
+  bool _loading = true;
+  List<_Crumb>? _initialCrumbs;
 
   bool _isViewableMedia(IptvItem item) {
     if (item.type != IptvItemType.media) return false;
@@ -48,6 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    _initialCrumbs = widget.initialCrumbs;
     if (widget.parentId == null && SupabaseService.instance.isLoggedIn) {
       _syncLogos();
     }
@@ -62,6 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final data = await _storage.loadItems();
     setState(() {
       _allItems = data;
+      _loading = false;
     });
   }
 
@@ -159,10 +168,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _openFolder(IptvItem folder) async {
+    final newCrumbs = _breadcrumb()..add(_Crumb(folder.id, folder.name));
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (c) => HomeScreen(parentId: folder.id),
+        builder: (c) => HomeScreen(
+          parentId: folder.id,
+          initialCrumbs: newCrumbs,
+        ),
       ),
     );
     await _load();
@@ -243,6 +256,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   List<_Crumb> _breadcrumb() {
+    if (_loading) {
+      return _initialCrumbs ?? [const _Crumb(null, 'Dossier Central')];
+    }
     final List<_Crumb> res = [const _Crumb(null, 'Dossier Central')];
     String? current = widget.parentId;
     final List<_Crumb> stack = [];
@@ -270,10 +286,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: const Icon(Icons.arrow_back),
                 onPressed: () {
                   final parent = _findItem(widget.parentId!)?.parentId;
+                  final newCrumbs = crumbs.sublist(0, crumbs.length - 1);
                   Navigator.pushReplacement(
                     context,
                     PageRouteBuilder(
-                      pageBuilder: (_, __, ___) => HomeScreen(parentId: parent),
+                      pageBuilder: (_, __, ___) => HomeScreen(
+                        parentId: parent,
+                        initialCrumbs: newCrumbs,
+                      ),
                       transitionsBuilder: (_, __, ___, child) => child,
                       transitionDuration: Duration.zero,
                       reverseTransitionDuration: Duration.zero,
@@ -282,7 +302,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               )
             else
-              const SizedBox(width: kMinInteractiveDimension),
+              const SizedBox(width: kToolbarHeight),
             Expanded(
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -296,8 +316,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Navigator.pushReplacement(
                                   context,
                                   PageRouteBuilder(
-                                    pageBuilder: (_, __, ___) =>
-                                        HomeScreen(parentId: crumbs[i].id),
+                                    pageBuilder: (_, __, ___) => HomeScreen(
+                                      parentId: crumbs[i].id,
+                                      initialCrumbs: crumbs.sublist(0, i + 1),
+                                    ),
                                     transitionsBuilder: (_, __, ___, child) =>
                                         child,
                                     transitionDuration: Duration.zero,
@@ -314,7 +336,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
-                      if (i < crumbs.length - 1) const Text(' / '),
+                      if (i < crumbs.length - 1)
+                        const Icon(Icons.chevron_right, size: 16),
                     ],
                   ],
                 ),
