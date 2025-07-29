@@ -269,13 +269,20 @@ class _HomeScreenState extends State<HomeScreen> {
               IconButton(
                 icon: const Icon(Icons.arrow_back),
                 onPressed: () {
-                  if (Navigator.of(context).canPop()) {
-                    Navigator.pop(context);
-                  }
+                  final parent = _findItem(widget.parentId!)?.parentId;
+                  Navigator.pushReplacement(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (_, __, ___) => HomeScreen(parentId: parent),
+                      transitionsBuilder: (_, __, ___, child) => child,
+                      transitionDuration: Duration.zero,
+                      reverseTransitionDuration: Duration.zero,
+                    ),
+                  );
                 },
               )
             else
-              const SizedBox(width: kToolbarHeight),
+              const SizedBox(width: kMinInteractiveDimension),
             Expanded(
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -286,22 +293,15 @@ class _HomeScreenState extends State<HomeScreen> {
                         onTap: i == crumbs.length - 1
                             ? null
                             : () {
-                                Navigator.push(
+                                Navigator.pushReplacement(
                                   context,
                                   PageRouteBuilder(
                                     pageBuilder: (_, __, ___) =>
                                         HomeScreen(parentId: crumbs[i].id),
-                                    transitionsBuilder:
-                                        (_, animation, __, child) =>
-                                            SlideTransition(
-                                      position: Tween<Offset>(
-                                        begin: const Offset(-1, 0),
-                                        end: Offset.zero,
-                                      ).animate(animation),
-                                      child: child,
-                                    ),
-                                    transitionDuration:
-                                        const Duration(milliseconds: 300),
+                                    transitionsBuilder: (_, __, ___, child) =>
+                                        child,
+                                    transitionDuration: Duration.zero,
+                                    reverseTransitionDuration: Duration.zero,
                                   ),
                                 );
                               },
