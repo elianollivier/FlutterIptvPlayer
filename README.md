@@ -1,6 +1,25 @@
-# flutter_iptv_player
+# IPTV Stream Management
 
-A new Flutter project.
+
+This project allows managing IPTV playlists.
+
+## Customizing the App Icon
+
+1. Add your icon images under `assets/icon/`.
+2. Configure the `flutter_launcher_icons` package in `pubspec.yaml`:
+
+```yaml
+dev_dependencies:
+  flutter_launcher_icons: ^0.13.1
+
+flutter_icons:
+  android: true
+  windows: true
+  image_path: "assets/icon/app_icon.png"
+```
+
+3. Run `flutter pub run flutter_launcher_icons:main` to generate platform icons.
+
 
 ## Getting Started
 
