@@ -285,20 +285,7 @@ class _HomeScreenState extends State<HomeScreen> {
               IconButton(
                 icon: const Icon(Icons.arrow_back),
                 onPressed: () {
-                  final parent = _findItem(widget.parentId!)?.parentId;
-                  final newCrumbs = crumbs.sublist(0, crumbs.length - 1);
-                  Navigator.pushReplacement(
-                    context,
-                    PageRouteBuilder(
-                      pageBuilder: (_, __, ___) => HomeScreen(
-                        parentId: parent,
-                        initialCrumbs: newCrumbs,
-                      ),
-                      transitionsBuilder: (_, __, ___, child) => child,
-                      transitionDuration: Duration.zero,
-                      reverseTransitionDuration: Duration.zero,
-                    ),
-                  );
+                  Navigator.pop(context);
                 },
               )
             else
@@ -312,20 +299,25 @@ class _HomeScreenState extends State<HomeScreen> {
                       InkWell(
                         onTap: i == crumbs.length - 1
                             ? null
-                            : () {
-                                Navigator.pushReplacement(
-                                  context,
-                                  PageRouteBuilder(
-                                    pageBuilder: (_, __, ___) => HomeScreen(
-                                      parentId: crumbs[i].id,
-                                      initialCrumbs: crumbs.sublist(0, i + 1),
+                            : () async {
+                                Navigator.popUntil(context, (r) => r.isFirst);
+                                for (int k = 1; k <= i; k++) {
+                                  await Navigator.push(
+                                    context,
+                                    PageRouteBuilder(
+                                      pageBuilder: (_, __, ___) => HomeScreen(
+                                        parentId: crumbs[k].id,
+                                        initialCrumbs:
+                                            crumbs.sublist(0, k + 1),
+                                      ),
+                                      transitionsBuilder: (_, __, ___, child) =>
+                                          child,
+                                      transitionDuration: Duration.zero,
+                                      reverseTransitionDuration:
+                                          Duration.zero,
                                     ),
-                                    transitionsBuilder: (_, __, ___, child) =>
-                                        child,
-                                    transitionDuration: Duration.zero,
-                                    reverseTransitionDuration: Duration.zero,
-                                  ),
-                                );
+                                  );
+                                }
                               },
                         child: Text(
                           crumbs[i].name,
