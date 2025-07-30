@@ -302,7 +302,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               )
             else
-              const SizedBox(width: kToolbarHeight),
+              const SizedBox(width: 40),
             Expanded(
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -336,8 +336,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
-                      if (i < crumbs.length - 1)
-                        const Icon(Icons.chevron_right, size: 16),
+                      if (i < crumbs.length - 1) ...[
+                        const Icon(Icons.chevron_right, size: 30),
+                        const SizedBox(width: 6),
+                      ],
+
                     ],
                   ],
                 ),
