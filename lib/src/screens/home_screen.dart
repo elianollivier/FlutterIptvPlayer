@@ -40,6 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final Logger _logger = Logger();
   List<IptvItem> _allItems = [];
   String? _draggingId;
+  final Map<String, GlobalKey> _itemKeys = {};
   bool _loading = true;
   List<_Crumb>? _initialCrumbs;
 
@@ -50,6 +51,10 @@ class _HomeScreenState extends State<HomeScreen> {
       final url = l.url.toLowerCase();
       return url.endsWith('.mp4') || url.endsWith('.mkv');
     });
+  }
+
+  GlobalKey _keyForItem(String id) {
+    return _itemKeys.putIfAbsent(id, () => GlobalKey());
   }
 
   @override
@@ -244,6 +249,11 @@ class _HomeScreenState extends State<HomeScreen> {
       _allItems = newAll;
       _draggingId = null;
     });
+    final state = _keyForItem(item.id).currentState;
+    if (state != null) {
+      // ignore: avoid_dynamic_calls
+      (state as dynamic).showOverlay();
+    }
     _updatePositions();
     await _storage.saveItems(_allItems);
   }
@@ -281,7 +291,7 @@ class _HomeScreenState extends State<HomeScreen> {
         titleSpacing: 0,
         title: Row(
           children: [
-            if (widget.parentId != null)
+            if (widget.parentId != null && !Platform.isAndroid)
               IconButton(
                 icon: const Icon(Icons.arrow_back),
                 onPressed: () {
@@ -367,9 +377,17 @@ class _HomeScreenState extends State<HomeScreen> {
               runSpacing: 8,
               onReorder: _reorder,
               onNoReorder: (index) {
+                final id = _draggingId;
                 setState(() {
                   _draggingId = null;
                 });
+                if (id != null) {
+                  final state = _keyForItem(id).currentState;
+                  if (state != null) {
+                    // ignore: avoid_dynamic_calls
+                    (state as dynamic).showOverlay();
+                  }
+                }
               },
               onReorderStarted: (index) {
                 setState(() {
@@ -394,6 +412,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     key: ValueKey(item.id),
                     width: itemWidth,
                     child: ItemCard(
+                      key: _keyForItem(item.id),
                       item: item,
                       onEdit: () => _editItem(item),
                       onOpenFolder: item.type == IptvItemType.folder

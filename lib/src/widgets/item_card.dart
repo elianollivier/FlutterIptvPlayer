@@ -100,6 +100,16 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
     }
   }
 
+  void showOverlay() {
+    setState(() => _hovered = true);
+    _hoverTimer?.cancel();
+    _hoverTimer = Timer(const Duration(seconds: 3), () {
+      if (mounted) {
+        setState(() => _hovered = false);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final ChannelLink? selected =
@@ -343,25 +353,8 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
         builder: (context, constraints) {
           final boundedHeight = constraints.hasBoundedHeight &&
               constraints.maxHeight != double.infinity;
-          final isMobile = Platform.isAndroid || Platform.isIOS;
           final content = InkWell(
-            onTap: isMobile
-                ? () {
-                    if (_hovered) {
-                      _hoverTimer?.cancel();
-                      _open();
-                      setState(() => _hovered = false);
-                    } else {
-                      setState(() => _hovered = true);
-                      _hoverTimer?.cancel();
-                      _hoverTimer = Timer(const Duration(seconds: 3), () {
-                        if (mounted) {
-                          setState(() => _hovered = false);
-                        }
-                      });
-                    }
-                  }
-                : _open,
+            onTap: _open,
             child: AspectRatio(aspectRatio: 0.9, child: card),
           );
           return Column(
