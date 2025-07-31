@@ -15,6 +15,8 @@ class ItemCard extends StatefulWidget {
     this.onOpenFolder,
     this.onOpenLink,
     this.dragging = false,
+    this.highlight = false,
+    this.onHighlightHandled,
   });
 
   final IptvItem item;
@@ -22,6 +24,8 @@ class ItemCard extends StatefulWidget {
   final VoidCallback? onOpenFolder;
   final ValueChanged<ChannelLink>? onOpenLink;
   final bool dragging;
+  final bool highlight;
+  final VoidCallback? onHighlightHandled;
 
   @override
   State<ItemCard> createState() => _ItemCardState();
@@ -35,12 +39,23 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
   Timer? _hoverTimer;
   late final ScrollController _scrollCtrl;
   String? _localLogo;
+  
+  void _handleHighlight() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      showOverlay();
+      widget.onHighlightHandled?.call();
+    });
+  }
 
   @override
   void initState() {
     super.initState();
     _scrollCtrl = ScrollController();
     _loadLogo();
+    if (widget.highlight) {
+      _handleHighlight();
+    }
   }
 
   @override
@@ -49,6 +64,9 @@ class _ItemCardState extends State<ItemCard> with TickerProviderStateMixin {
     if (oldWidget.item.logoUrl != widget.item.logoUrl ||
         oldWidget.item.logoPath != widget.item.logoPath) {
       _loadLogo();
+    }
+    if (widget.highlight && !oldWidget.highlight) {
+      _handleHighlight();
     }
   }
 

@@ -40,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final Logger _logger = Logger();
   List<IptvItem> _allItems = [];
   String? _draggingId;
-  final Map<String, GlobalKey> _itemKeys = {};
+  final Set<String> _highlighted = {};
   bool _loading = true;
   List<_Crumb>? _initialCrumbs;
 
@@ -51,10 +51,6 @@ class _HomeScreenState extends State<HomeScreen> {
       final url = l.url.toLowerCase();
       return url.endsWith('.mp4') || url.endsWith('.mkv');
     });
-  }
-
-  GlobalKey _keyForItem(String id) {
-    return _itemKeys.putIfAbsent(id, () => GlobalKey());
   }
 
   @override
@@ -248,12 +244,8 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _allItems = newAll;
       _draggingId = null;
+      _highlighted.add(item.id);
     });
-    final state = _keyForItem(item.id).currentState;
-    if (state != null && state.mounted) {
-      // ignore: avoid_dynamic_calls
-      (state as dynamic).showOverlay();
-    }
     _updatePositions();
     await _storage.saveItems(_allItems);
   }
@@ -382,11 +374,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   _draggingId = null;
                 });
                 if (id != null) {
-                  final state = _keyForItem(id).currentState;
-                  if (state != null && state.mounted) {
-                    // ignore: avoid_dynamic_calls
-                    (state as dynamic).showOverlay();
-                  }
+                  setState(() {
+                    _highlighted.add(id);
+                  });
                 }
               },
               onReorderStarted: (index) {
@@ -412,7 +402,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     key: ValueKey(item.id),
                     width: itemWidth,
                     child: ItemCard(
-                      key: _keyForItem(item.id),
                       item: item,
                       onEdit: () => _editItem(item),
                       onOpenFolder: item.type == IptvItemType.folder
@@ -422,6 +411,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           ? (link) => _playMedia(item, link)
                           : null,
                       dragging: _draggingId == item.id,
+                      highlight: _highlighted.contains(item.id),
+                      onHighlightHandled: () {
+                        setState(() {
+                          _highlighted.remove(item.id);
+                        });
+                      },
                     ),
                   ),
               ],
