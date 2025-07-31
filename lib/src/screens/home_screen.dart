@@ -250,7 +250,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _draggingId = null;
     });
     final state = _keyForItem(item.id).currentState;
-    if (state != null) {
+    if (state != null && state.mounted) {
       // ignore: avoid_dynamic_calls
       (state as dynamic).showOverlay();
     }
@@ -299,7 +299,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               )
             else
-              const SizedBox(width: 40),
+              const SizedBox(width: 16),
             Expanded(
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -383,7 +383,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 });
                 if (id != null) {
                   final state = _keyForItem(id).currentState;
-                  if (state != null) {
+                  if (state != null && state.mounted) {
                     // ignore: avoid_dynamic_calls
                     (state as dynamic).showOverlay();
                   }

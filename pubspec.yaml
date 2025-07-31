@@ -100,7 +100,24 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
-flutter_icons:
+flutter_launcher_icons:
+  # Mobile
   android: true
-  windows: true
-  image_path: "assets/icon/app_icon.png"
+  ios: true
+  image_path: assets/icons/app_icon.png
+
+  # Desktop / Web (obligatoirement en Map)
+  windows:
+    generate: true
+    image_path: assets/icons/app_icon.png
+  macos:
+    generate: true
+    image_path: assets/icons/app_icon.png
+  linux:
+    generate: true
+    image_path: assets/icons/app_icon.png
+  web:
+    generate: true
+    image_path: assets/icons/app_icon.png
+    background_color: "#FFFFFF"   # optionnel
+    theme_color: "#000000"        # optionnel
